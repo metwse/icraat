@@ -23,7 +23,7 @@ BEGIN
 	RETURN QUERY SELECT ARRAY(
 		(SELECT exams.id FROM exams WHERE exams.id < _before AND 
 		 ((__publisher_id IS null) OR CARDINALITY(__publisher_id) = 0 OR exams.publisher_id = ANY(__publisher_id)) AND ((__category_id IS null) OR CARDINALITY(__category_id) = 0 OR exams.category_id = ANY(__category_id)) 
-		 ORDER BY similarity(_text, exams.full_name) DESC LIMIT 10)
+		 ORDER BY similarity(_text, exams.full_name) DESC, id DESC LIMIT 10)
 	), 0::bigint;
 END $$;
 

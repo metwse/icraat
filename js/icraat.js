@@ -41,13 +41,13 @@ class IcraatError extends Error {
 
 class Session {
     static PLURAL_MAPPINGS = {
-        'exam': 'exams', 'lesson': 'lessons', 'publisher': 'publishers',
+        'exam': 'exams', 'lesson': 'lessons', 'publisher': 'publishers', 'book': 'books',
         'exam.category': 'exams.categories'
     }
 
     constructor() {
         this.cache = {
-            'exams': {}, 'lessons': {}, 'publishers': {},
+            'exams': {}, 'lessons': {}, 'publishers': {}, 'books': {},
             'exams.categories': {}
         }
     }
@@ -127,6 +127,13 @@ class Session {
     
     dashboard = {
         session: this,
+        async all() {
+            var [data] = await this.session.request('/dashboard')
+            data.questions = new Questions(data.questions, this.session)
+            data.exams = (await this.session.bulkGet({ ...data.exams, books: await data.questions.format(true) })).exams
+            data.questions.format()
+            return data
+        },
         async exams() {
             var [data] = await this.session.request('/dashboard/exams')
             return (await this.session.bulkGet(data)).exams
@@ -142,6 +149,33 @@ class Session {
             if (!ok) throw IcraatError(data)
             return (await this.session.bulkGet({ [mapped]: data }))[mapped]
         }
+    }
+}
+
+class Questions {
+    constructor(data, session){
+        this.data = data.map(({ days_before, questions }) => ({
+            daysBefore: days_before, 
+            questions: questions ? questions.map(([ book_id, count, timestamp ]) => {
+                const date = new Date(); date.setTime(timestamp * 1000)
+                return { bookId: book_id, count, timestamp: date }
+            }) : []
+        }))
+        this._session = session
+    }
+
+    async format(req) {
+        const request = this.data.map(v => v.questions.map(q => q.bookId)).flat()
+        if (req) return request
+        const data = await this._session.bulkGet({ books: request })
+        await Promise.all(this.data.map(v => v.questions.map(async q => { q.book = await this._session.get('book', q.bookId) })).flat())
+    }
+}
+
+class Book {
+    constructor({ id, publisher_id, name }, session) {
+        this.id = id, this.name = name, this.publisherId = publisher_id
+        this._session = session
     }
 }
 

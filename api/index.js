@@ -53,10 +53,10 @@ app.get('/', (req, res) => res.json({ uptime: ~~(performance.now() / 1000), mess
 
 
 //#region -- -- -- -- PRIMITIVE DATA TYPES
-const dataTypes = ['exams', 'lessons', 'publishers', 'exams.categories']
+const dataTypes = ['exams', 'lessons', 'publishers', 'books', 'exams.categories']
 dataTypes.mappings = {
     'exams': 'exams.', 'exams.categories': 'exams.categories_',
-    'lessons': 'lessons.', 'publishers': 'publishers.'
+    'lessons': 'lessons.', 'publishers': 'publishers.', 'books': 'books.'
 }
 
 dataTypes.routes = dataTypes.map(v => '/' + v.replace(/\./g, '/'))

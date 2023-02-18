@@ -76,7 +76,7 @@
         </div>
 
         <div class="exams">
-            <icraat-loading></icraat-loading>
+            <i-loading></i-loading>
             <div class="list"></div>
         </div>
 
@@ -92,7 +92,7 @@
                     <h4>yayınevi</h4>
                     <input placeholder="Ara" />
                 </div>
-                <icraat-loading></icraat-loading>
+                <i-loading></i-loading>
                 <ul></ul>
             </section>
             <hr />
@@ -101,7 +101,7 @@
                     <h4>kategori</h4>
                     <input placeholder="Ara" />
                 </div>
-                <icraat-loading></icraat-loading>
+                <i-loading></i-loading>
                 <ul></ul>
             </section>
         </div>
@@ -123,10 +123,10 @@
     
     /* ** ** ** ** */
 
-    .r .content .exams icraat-loading { display: none }
-    .r .content .exams.loading icraat-loading { display: block }
-    .r.analyze .content .exams icraat-exam .select { display: block }
-    .r.analyze .content .exams icraat-exam .view { display: none }
+    .r .content .exams i-loading { display: none }
+    .r .content .exams.loading i-loading { display: block }
+    .r.analyze .content .exams i-exam .select { display: block }
+    .r.analyze .content .exams i-exam .view { display: none }
 
     /* ** ** ** ** */
 
@@ -175,8 +175,8 @@
     .r .content .select-filter section  li:hover { filter: brightness(1.1); cursor: pointer }
     .r .content .select-filter section  li:before { content: ''; display: grid; width: 1em; height: 1em; background: var(--color); border-radius: .25em; place-items: center }
     .r .content .select-filter section  li.active:before { background: var(--t-1) }
-    .r .content .select-filter section icraat-loading { display: none }
-    .r .content .select-filter section.loading icraat-loading { display: block }
+    .r .content .select-filter section i-loading { display: none }
+    .r .content .select-filter section.loading i-loading { display: block }
 
     /*#endregion*/
 </style>
@@ -193,7 +193,7 @@
     exams.list = exams.querySelector('.list')
     exams.load = data => {
         for (let exam of data) {
-            let elem = d.createElement('icraat-exam')
+            let elem = d.createElement('i-exam')
             elem.attach(exam)
             elem.oncheck = analyze.add
             elem.checked = analyze.list.includes(exam)

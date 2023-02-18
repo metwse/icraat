@@ -11,11 +11,11 @@
 
 </ul>
 <ul class="charts">
-    <li><icraat-loading class="initial"></icraat-loading></li>
-    <li><icraat-loading class="initial"></icraat-loading></li>
-    <li><icraat-loading class="initial"></icraat-loading></li>
-    <li><icraat-loading class="initial"></icraat-loading></li>
-    <li><icraat-loading class="initial"></icraat-loading></li>
+    <li><i-loading class="initial"></i-loading></li>
+    <li><i-loading class="initial"></i-loading></li>
+    <li><i-loading class="initial"></i-loading></li>
+    <li><i-loading class="initial"></i-loading></li>
+    <li><i-loading class="initial"></i-loading></li>
 </ul>
 
 <style>
@@ -29,7 +29,7 @@
 
     .r .charts { display: flex; margin: 0; padding: 0; flex-direction: column; gap: 1em }
     .r .charts li { height: 20em; list-style-type: none }
-    .r .charts li:has(icraat-loading) { display: grid; border: .06125em solid var(--bg-3); place-items: center; border-radius: .5em }
+    .r .charts li:has(i-loading) { display: grid; border: .06125em solid var(--bg-3); place-items: center; border-radius: .5em }
 </style>
 
 <script>
@@ -56,7 +56,7 @@
             legend: { textStyle: { color: 'white', opacity: .75 } }
         }
 
-        r.querySelector('icraat-loading.initial').remove()
+        r.querySelector('i-loading.initial').remove()
 
         var data = [
             [

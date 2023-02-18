@@ -1,4 +1,9 @@
-﻿customElements.define('icraat-exam', class extends HTMLElement {
+﻿const d = document
+
+
+
+//{{{ IcraatExam 
+customElements.define('i-exam', class extends HTMLElement {
     constructor() {
         super()
         this._checked = false
@@ -27,7 +32,7 @@
         this.querySelector('.name').innerText = exam.name
         this.querySelector('.date').innerText = new Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(exam.timestamp)
         this.querySelector('.select').onclick = ({ target }) => {
-            const element = target.closest('icraat-exam')
+            const element = target.closest('i-exam')
             element.checked = !element.checked
             if (this.oncheck) this.oncheck(this)
         }
@@ -40,11 +45,11 @@
     }
     get checked() { return this._checked }
 })
+//}}}
 
 
 
-
-
+//{{{ IcraatExams 
 class IcraatExams extends HTMLElement {
     static List = class extends Array {
         constructor(listElement) {
@@ -68,7 +73,7 @@ class IcraatExams extends HTMLElement {
     
     concat(data) { for (let exam of data) this.push(exam) }
     push(exam) {
-        let elem = document.createElement('icraat-exam')
+        let elem = document.createElement('i-exam')
         elem.attach(exam)
         elem.oncheck = () => this.select.list.toggle(elem)
         elem.checked = this.select.list.includes(exam)
@@ -84,17 +89,16 @@ class IcraatExams extends HTMLElement {
             this.clear()
             return this.list 
         },
-        clear() { this.list.clear(); for (let child of this.elem.children) if (child.tagName == 'ICRAAT-EXAM') child.checked = false },
-        all(reverse) { for (let child of reverse ? Array.from(this.elem.children).reverse() : this.elem.children) if (child.tagName == 'ICRAAT-EXAM') child.checked = true, this.list.add(child) },
+        clear() { this.list.clear(); for (let child of this.elem.children) if (child.tagName == 'I-EXAM') child.checked = false },
+        all(reverse) { for (let child of reverse ? Array.from(this.elem.children).reverse() : this.elem.children) if (child.tagName == 'I-EXAM') child.checked = true, this.list.add(child) },
         stop() {
             this.elem.mode = 'normal'
             this.elem.classList.remove('select')
         }
     }
 
-
     async search(query, filter) {
-        this.innerHTML = '<icraat-loading></icraat-loading>', this.classList.add('loading')
+        this.innerHTML = '<i-loading></i-loading>', this.classList.add('loading')
         const random = Math.random()
         this.random.search = random
         const data = await eval('session').dashboard.examsSearch('exams', query, { filter: `${filter['publishers'].map(v => v.id)};${filter['exams.categories'].map(v => v.id)}` })
@@ -102,5 +106,49 @@ class IcraatExams extends HTMLElement {
     }
 }
 
+customElements.define('i-exams', IcraatExams)
+//}}}
 
-customElements.define('icraat-exams', IcraatExams)
+
+
+//{{{ IcraatFancyList 
+class IcraatFancyList extends HTMLElement {
+    constructor() {
+        super()
+        this._schema = []
+        this._list = []
+    }
+
+    set schema(schema) {
+        this._schema = []
+        this._schema.push( { html: schema.replace(/([\s\S]*?){([\s\S]*?)}/g, (_, html, js) => {
+            if (html) this._schema.push({ html })
+            if (js) this._schema.push({ js })
+            return ''
+        }) })
+    }
+    
+    get list() { return this._list.map(v => v.data) }
+    concat(data) { for (let exam of data) this.push(exam) }
+    push(data) {
+        const elem = d.createElement('div')
+        elem.innerHTML = this._schema.map(v => {
+            if (v.html) return v.html
+            return eval(v.js)
+        }).join('')
+        elem.data = data
+        this.appendChild(elem)
+        this._list.push(elem)
+    }
+    remove(data, by) { 
+        for (let child of this.children) if (eval(`child.data${by ?? ''} == data`)) child.remove()
+        var i = false
+        while (i != -1) {
+            if (i !== false) this._list.splice(i, 1)
+            i = this._list.findIndex(e => eval(`e.data${by} == data`))
+        }
+    }
+    clear() { this._list = [], this.innerHTML = '' }
+}
+customElements.define('i-fancylist', IcraatFancyList)
+//}}}

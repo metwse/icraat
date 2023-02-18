@@ -37,8 +37,8 @@
 
     .r .lessons { margin: 3em 0 0; padding: 0 }
     .r .lessons li { display: flex; margin: 1em auto; padding: .5em; max-width: 24em; height: 12em; background: var(--bg-3); align-items: center; flex-direction: column; list-style-type: none; border-radius: .5em }
-    .r .lessons li:has(icraat-loading) { display: grid; place-items: center }
-    .r .lessons li icraat-loading { border-color: var(--bg-2) var(--bg-2) transparent }
+    .r .lessons li:has(i-loading) { display: grid; place-items: center }
+    .r .lessons li i-loading { border-color: var(--bg-2) var(--bg-2) transparent }
 </style>
 
 <script>
@@ -57,7 +57,7 @@
     var lessons = r.querySelector('.lessons'), data = {}
     r.data.category.schema.forEach(v => {
         let element = d.createElement('li')
-        element.innerHTML = `<icraat-loading></icraat-loading>`
+        element.innerHTML = `<i-loading></i-loading>`
         lessons.appendChild(element)
     })
 

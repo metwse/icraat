@@ -331,7 +331,7 @@
     }
     Object.entries({
         'button.all': () => { for (let i of Array.from(exams.list.childNodes).reverse()) if (!i.checked) i.checked = true, i.oncheck(i) },
-        'button.clear': () => { analyze.ul.innerHTML = ''; for (let i of Array.from(exams.list.childNodes)) i.checked = false, i.oncheck(i) },
+        'button.clear': () => { analyze.ul.innerHTML = ''; for (let i of Array.from(exams.list.childNodes)) i.checked = false, i.oncheck(i); analyze.list = [] },
         'button.ok': () => app.redirect(`/analiz/${analyze.list.map(exam => exam.id)}`)
     }).forEach(([item, listener]) => analyze.querySelector(item).onclick = listener)
 

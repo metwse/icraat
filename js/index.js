@@ -83,8 +83,10 @@ const app = {
     },
     async redirect(path, title) {
         history.pushState(null, title, path)
+        this.history.push(r)
         await this.load()
     },
+    history: [],
     async load() {
         this.location.format()
         switch (this.location.pathname[0]) {
@@ -96,6 +98,15 @@ const app = {
     }
 }
 
+onpopstate = async() => {
+    if (app.history.onpopstate) {
+        if (await app.history.onpopstate() === false) return history.pushState(null, null)
+        app.history.onpopstate = null
+    }
+    if (!mouse.state) return history.pushState(null, null)
+    const newRoot = app.history.pop()
+    if (newRoot) { root.parentElement.replaceChild(newRoot, root); r = root = newRoot }
+}
 
 onload = async () => {
     await app.load()

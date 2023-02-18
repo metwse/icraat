@@ -219,6 +219,7 @@
     var selectFilter = r.querySelector('.select-filter')
     selectFilter.random = {}
     selectFilter.filters = ['publishers', 'exams.categories']
+    selectFilter.close = selectFilter.querySelector('.close')
     for (let type of selectFilter.filters) {
         let self = selectFilter.querySelector('.' + type.split('.').at(-1))
         selectFilter[type] = self
@@ -259,9 +260,11 @@
             selectFilter[key].classList.remove('loading')
         }
     }
-    selectFilter.querySelector('.close').onclick = async () => {
+    selectFilter.close.onclick = async () => {
         selectFilter.style.display = 'none'
         filter.list.innerHTML = ''
+        app.history.onpopstate = null
+
         let i = 0
         for (let filters of Object.values(filter.active)) {
             if (i == 1 && Object.values(filter.active).every(v => v.length)) filter.list.appendChild(d.createElement('hr'))
@@ -282,6 +285,8 @@
             selectFilter[filter].classList.add('loading')
             selectFilter[filter].ul.innerHTML = ''
         }
+        app.history.onpopstate = () => selectFilter.style.display = 'none'
+        history.pushState(null, null)
 
         const random = Math.random()
         selectFilter.random.load = random

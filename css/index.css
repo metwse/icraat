@@ -24,7 +24,7 @@ button:active { cursor: pointer; filter: brightness(1.1) }
 input { background: none; outline: none }
 
 body { margin: 0; background: var(--bg-1); font-family: rubik, sans-serif; color: var(--color); place-content: center; place-items: center; overflow: hidden }
-body > *  { position: absolute; top: 0; left 0 }
+body > * { position: absolute; top: 0; left: 0 }
 
 
 #initial-load { display: flex; z-index: 9999; padding-top: 16em; width: 100vw; height: 100vh; background: var(--bg-1); flex-direction: column; align-items: center; transition: opacity ease .1s}

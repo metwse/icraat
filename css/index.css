@@ -44,7 +44,7 @@ body > *  { position: absolute; top: 0; left 0 }
 
 main { display: flex; width: 100vw; height: 100%; background: var(--bg-2); flex-direction: column; overflow: hidden }
 @media (min-width: 600px) {
-    main { width: min(calc(100vw - 2em), 600px); height: calc(100vh - 2em); border-radius: .5em; box-shadow: var(--shadow-1) .1em .1em .1em }
+    main { width: min(calc(100vw - 2em), 600px); height: calc(100vh - 2em); left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: .5em; box-shadow: var(--shadow-1) .1em .1em .1em }
 }
 
 #root { width: 100%; padding: 1em; position: relative; flex-grow: 1; overflow-y: auto }

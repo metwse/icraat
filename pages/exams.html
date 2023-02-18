@@ -25,7 +25,7 @@
                         </div>
                     </button>
                 </div>
-                <div class="list"></div>
+                <i-fancylist clicktoremove></i-fancylist>
             </div>
             <div class="analyze">
                 <div>
@@ -71,7 +71,7 @@
                         </button>
                     </div>
                 </div>
-                <i-fancylist></i-fancylist>
+                <i-fancylist clicktoremove></i-fancylist>
             </div>
         </div>
 
@@ -120,29 +120,17 @@
     
     /* ** ** ** ** */
 
-    .r .content i-exams i-loading { display: none }
-    .r .content i-exams.loading i-loading { display: block }
-
-    /* ** ** ** ** */
-
     .r .content .buttons > * { margin-top: .5em }
     .r .content .buttons > div > div:first-of-type { display: flex; justify-content: space-between; gap: .25em; flex-wrap: wrap }
     .r .content .buttons > div > div:first-of-type > div { display: flex; gap: .25em; flex-wrap: wrap }
+    .r .content .buttons button { padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); text-transform: uppercase; border-radius: 100em }
     .r .content .buttons button svg { height: 1.25em }
     .r .content .buttons button div { gap: .5em }
-    .r .content .buttons button,
-    .r .content .filter .list span { padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); text-transform: uppercase; border-radius: 100em }
     
     .r .content .analyze:has(i-fancylist:not(:empty)) button.selected { display: inline-flex !important }
     .r .content .analyze i-fancylist:empty { display: none }
     .r .content .analyze  div .publisher { text-transform: uppercase }
     .r .content .analyze  div .name { text-decoration: underline var(--t-1) }
-
-    .r .content .filter .list { display: flex; margin: .25em 0 0; padding: 0; width: 100%; overflow-x: auto; align-items: center; gap: .5em }
-    .r .content .filter .list hr { display: inline-block; width: 1px; height: 2em; margin: 0; background: var(--bg-3); border: none }
-    .r .content .filter .list span  { display: inline-block; padding: .25em .5em; font-size: .9em; white-space: nowrap }
-    .r .content .filter .list::-webkit-scrollbar { height: 4px }
-    .r .content .filter .list::-webkit-scrollbar-thumb { border-width: 0 }
 
     
     .r.analyze .content .analyze button .start { display: none }
@@ -188,7 +176,13 @@
     //{{{ FILTER 
     var filter = r.querySelector('.filter')
     filter.button = filter.querySelector('button')
-    filter.list = filter.querySelector('.list')
+    filter.ul = filter.querySelector('i-fancylist')
+    filter.ul.schema = '{data.name}'
+    filter.ul.onremove = data => {
+        const key = ({ Publisher: 'publishers', Category: 'exams.categories' })[Object.getPrototypeOf(data).constructor.name], index = filter.active[key].indexOf(data)
+        if (index != -1) filter.active[key].splice(index, 1)
+        exams.search(search.value, filter.active, 300)
+    }
     filter.active = { 'publishers': [], 'exams.categories': [] }
 
 
@@ -238,22 +232,11 @@
     }
     selectFilter.close.onclick = async () => {
         selectFilter.style.display = 'none'
-        filter.list.innerHTML = ''
+        filter.ul.clear()
+        filter.ul.concat2d(Object.values(filter.active))
         app.history.onpopstate = null
-
-        let i = 0
-        for (let filters of Object.values(filter.active)) {
-            if (i == 1 && Object.values(filter.active).every(v => v.length)) filter.list.appendChild(d.createElement('hr'))
-            for (let { name }  of filters) {
-                let element = d.createElement('span')
-                element.innerText = name
-                filter.list.appendChild(element)
-            }
-            i++
-        }
         exams.search(search.value, filter.active)
-
-	return false
+        return false
     }
 
 
@@ -274,9 +257,11 @@
     //}}}
 
 
+    //{{{ ANALYZE 
     var analyze = r.querySelector('.analyze')
     analyze.ul = analyze.querySelector('i-fancylist')
     analyze.ul.schema = '<span class="publisher">{data.publisher.name}</span>: <span class="category">{data.category.name}</span> <span class="name">{data.name}</span>'
+    analyze.ul.onremove = exam => exams.select.deselect(exam)
     analyze.querySelector('button.start').onclick = () => {
         if (r.classList.contains('analyze')) {
             analyze.ul.clear()
@@ -290,11 +275,11 @@
         r.classList.toggle('analyze')
     }
     Object.entries({
-        'button.all': () => { exams.select.all(true) },
-        'button.clear': () => { exams.select.clear() },
+        'button.all': () => exams.select.all(true),
+        'button.clear': () => exams.select.clear(),
         'button.ok': () => app.redirect(`/analiz/${exams.select.list.map(v => v.id)}`)
     }).forEach(([item, listener]) => analyze.querySelector(item).onclick = listener)
-
+    //}}}
 
 
     exams.concat(r.data)

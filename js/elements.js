@@ -58,17 +58,18 @@ class IcraatExams extends HTMLElement {
             this.onadd = this.onremove = this.onclear = null 
         }
         toggle(elem) { if (!this.includes(elem.exam)) this.add(elem); else this.remove(elem) }
-        add({ exam }) { if (!this.includes(exam)) this.push(exam), this.onadd && this.onadd(exam) }
-        remove({ exam }) { const index = this.indexOf(exam); if (index != -1) this.splice(index, 1), this.onremove && this.onremove(exam) }
-        clear() { this.splice(0), this.onclear && this.onclear() }
+        add({ exam }) { if (!this.includes(exam)) this.push(exam), this.onadd?.(exam) }
+        remove({ exam }) { const index = this.indexOf(exam); if (index != -1) this.splice(index, 1), this.onremove?.(exam) }
+        clear() { this.splice(0), this.onclear?.() }
         reset() { this.splice(0), this.onadd = this.onremove = this.onclear = null }
     }
 
     constructor() {
         super()
-        this._checked = false
         this.mode = 'normal'
         this.random = {}
+        this._checked = false
+        this._lastSearch = [null, null]
     }
     
     concat(data) { for (let exam of data) this.push(exam) }
@@ -90,6 +91,7 @@ class IcraatExams extends HTMLElement {
             return this.list 
         },
         clear() { this.list.clear(); for (let child of this.elem.children) if (child.tagName == 'I-EXAM') child.checked = false },
+        deselect(exam) { for (let child of this.elem.children) if (child.exam == exam) child.checked = false, this.list.remove({ exam: child.exam }) },
         all(reverse) { for (let child of reverse ? Array.from(this.elem.children).reverse() : this.elem.children) if (child.tagName == 'I-EXAM') child.checked = true, this.list.add(child) },
         stop() {
             this.elem.mode = 'normal'
@@ -97,12 +99,19 @@ class IcraatExams extends HTMLElement {
         }
     }
 
-    async search(query, filter) {
-        this.innerHTML = '<i-loading></i-loading>', this.classList.add('loading')
-        const random = Math.random()
-        this.random.search = random
-        const data = await eval('session').dashboard.examsSearch('exams', query, { filter: `${filter['publishers'].map(v => v.id)};${filter['exams.categories'].map(v => v.id)}` })
-        if (this.random.search == random) this.innerHTML = '', this.concat(data), this.classList.remove('loading')
+    async search(query, filter, timeout) {
+        var random = this.random.search = Math.random()
+        await new Promise(res => {
+            setTimeout(async () => {
+                if (random != this.random.search) return res(false)
+                this.innerHTML = '<i-loading></i-loading>', this.classList.add('loading')
+                random = Math.random()
+                this.random.search = random
+                const data = await eval('session').dashboard.examsSearch('exams', query ?? '', { filter: `${filter?.['publishers'].map(v => v.id) ?? ''};${filter?.['exams.categories'].map(v => v.id) ?? ''}` })
+                if (this.random.search == random) this.innerHTML = '', this.concat(data), this.classList.remove('loading')
+                res(true)
+            }, timeout)
+        })
     }
 }
 
@@ -117,6 +126,8 @@ class IcraatFancyList extends HTMLElement {
         super()
         this._schema = []
         this._list = []
+        this.clickToRemove = this.getAttribute('clicktoremove') !== null 
+        this.onremove = null
     }
 
     set schema(schema) {
@@ -129,13 +140,26 @@ class IcraatFancyList extends HTMLElement {
     }
     
     get list() { return this._list.map(v => v.data) }
-    concat(data) { for (let exam of data) this.push(exam) }
+    concat(data) { for (let i of data) this.push(i) }
+    concat2d(data) {
+        for (let list of data) if (list.length) this.concat(list), this.hr()
+        this.lastChild?.remove()
+        if (this.firstChild?.tagName == 'HR') this.firstChild.remove()
+    }
+    hr() { this.appendChild(d.createElement('hr')) }
     push(data) {
         const elem = d.createElement('div')
         elem.innerHTML = this._schema.map(v => {
             if (v.html) return v.html
             return eval(v.js)
         }).join('')
+        elem.onclick = () => { 
+            if (this.clickToRemove) {
+                this.remove(data), this.onremove?.(data)
+                if (this.lastChild?.tagName == 'HR') this.lastChild.remove()
+                if (this.firstChild?.tagName == 'HR') this.firstChild.remove()
+            }
+        }
         elem.data = data
         this.appendChild(elem)
         this._list.push(elem)

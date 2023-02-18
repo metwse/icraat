@@ -9,12 +9,20 @@ i-exam .actions button { padding: .25em; width: 2em; height: 2em; border-radius:
 i-exam .actions .select { display: none; width: 1.5em; height: 1.5em; background: var(--color); border-radius: .25em }
 i-exam .actions .select:hover { cursor: pointer }
 i-exam.active .actions .select { background: var(--t-1) }
+
 i-exams.select i-exam .select { display: block }
 i-exams.select i-exam .view { display: none }
+i-exams i-loading { display: none }
+i-exams.loading i-loading { display: block }
 
 
 i-fancylist { display: flex; margin: .25em 0 0; padding: 0; flex-wrap: wrap; gap: .25em }
-i-fancylist > div { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em; list-style-type: none }
+i-fancylist > div { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em }
+
+
+i-fancylist hr { display: inline-block; width: 1px; height: 2em; margin: 0; background: var(--bg-3); border: none }
+i-fancylist::-webkit-scrollbar { height: 4px }
+i-fancylist::-webkit-scrollbar-thumb { border-width: 0 }
 
 
 i-loading { display: block; margin: 1em auto; width: 1.5em; height: 1.5em; border: .25em solid var(--bg-3); border-radius: 100%; border-right-color: transparent; animation: i-loading .5s linear infinite }

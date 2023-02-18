@@ -105,6 +105,7 @@ onpopstate = async() => {
     if (!mouse.state) return history.pushState(null, null)
     const newRoot = app.history.pop()
     if (newRoot) { root.parentElement.replaceChild(newRoot, root); r = root = newRoot }
+    else app.load()
 }
 
 onload = async () => {

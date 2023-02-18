@@ -1,6 +1,4 @@
-const url = {
-	backend: '/api'
-}
+const url = { backend: '/api' }
 
 
 class IcraatError extends Error {
@@ -159,7 +157,9 @@ class Exam {
         this.net = parseFloat(net)
         this.stats = nets.map(lesson => lesson.map(net => parseFloat(net))).map(([net, total, wrong, blank]) => { return { net, total, wrong, blank, true: total - wrong - blank } })
 
-        this.duration = parseFloat(duration).toFixed(2)
+        this.duration = duration.split('.')
+        this.duration[1] *=  3/5
+        this.duration = (+this.duration.join('.')).toFixed(2)
 
         this.timestamp = new Date(timestamp)
         if (publisher) this.publisher = publisher

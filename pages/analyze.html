@@ -84,7 +84,7 @@
 
         r.data.forEach(exam => {
             data[0][1].push([`${exam.shortName}`, exam.net])
-            data[1][1].push([`${exam.shortName}`, exam.net * 100 / exam.category.questionCount])
+            data[1][1].push([`${exam.shortName}`, exam.net * 100 / exam.questionCount])
             data[2][1].push([`${exam.shortName}`, exam.totalWrong, exam.totalBlank])
             data[3][1].push([`${exam.shortName}`, +exam.duration])
             data[4][1].push([`${exam.shortName}`, +exam.durationPerQuestion])

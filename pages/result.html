@@ -44,7 +44,7 @@
 <script>
     var stats = r.querySelector('.stats')
     stats.elements = stats.getElementsByTagName('li')
-    ![r.data.category.questionCount, r.data.duration + 'dk', r.data.totalTrue, r.data.totalWrong, r.data.totalBlank, r.data.net, (r.data.net * 100 / r.data.category.questionCount).toFixed(2) + '%'].forEach((v, index) => stats.elements[index].querySelector('.text').innerText = v)
+    ![r.data.questionCount, r.data.duration + 'dk', r.data.totalTrue, r.data.totalWrong, r.data.totalBlank, r.data.net, (r.data.net * 100 / r.data.questionCount).toFixed(2) + '%'].forEach((v, index) => stats.elements[index].querySelector('.text').innerText = v)
 
     var h2 = r.querySelector('h2')
     Object.entries({
@@ -85,7 +85,7 @@
                 ['Boş', stat.blank]
             ]
 
-			chart.draw(new google.visualization.arrayToDataTable(data), { ...options, title: `${r.data.category.schema[index][0].name} [%${(100 * stat.net / stat.total).toFixed(2)} - ${stat.net}]`, pieStartAngle: Math.random() * 360 })
+	    chart.draw(new google.visualization.arrayToDataTable(data), { ...options, title: `${r.data.category.schema[index][0].name} [%${(100 * stat.net / stat.total).toFixed(2)} - ${stat.net}]`, pieStartAngle: Math.random() * 360 })
         })
     })
 </script>

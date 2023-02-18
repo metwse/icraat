@@ -181,15 +181,16 @@ class Exam {
         if (!this.publisher) this.publisher = await this._session.get('publisher', this.publisherId)
         if (!this.category) {
 	    this.category = await this._session.get('exam.category', this.categoryId)
-	    this.durationPerQuestion = minuteIntegerToString(this._duration / this.category.questionCount)
 	}
     }
 
     get fullName() { return `${this.publisher.name} ${this.category.name} - ${this.name}` }
-    get shortName() { return `${this.publisher.name.match(/([A-Z]+)/g).join('')}: ${this.category.name.match(/([A-Z]+)/g).join('')}. ${this.name}` }
+    get shortName() { return `${this.publisher.name.match(/([A-Z0-9]+)/g).join('')}: ${this.category.name.match(/([A-Z0-9]+)/g).join('')}. ${this.name}` }
     get totalTrue() { return this.stats.map(v => v.true).reduce((a, b) => a + b) }
     get totalWrong() { return this.stats.map(v => v.wrong).reduce((a, b) => a + b) }
     get totalBlank() { return this.stats.map(v => v.blank).reduce((a, b) => a + b) }
+    get questionCount() { return this.stats.map(v => v.total).reduce((a, b) => a + b) }
+    get durationPerQuestion() { return minuteIntegerToString(this._duration / this.questionCount) }
 }
 
 

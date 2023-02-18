@@ -1,5 +1,13 @@
 const url = { backend: '/api' }
 
+const minuteIntegerToString = duration => {
+    let _duration = (duration + '').split('.')
+    if (!_duration[1]) _duration[1] = '00'
+    _duration[1] = (_duration[1] * 3/5 / 10 ** (_duration[1].length - 2) + '').split('.')[0]
+    while (_duration[1].length < 2) _duration[1] = '0' + _duration[1]
+    _duration[1] = _duration[1].substring(0, 2)
+    return _duration.join('.')
+} 
 
 class IcraatError extends Error {
     static ERRORS = {
@@ -157,10 +165,8 @@ class Exam {
         this.net = parseFloat(net)
         this.stats = nets.map(lesson => lesson.map(net => parseFloat(net))).map(([net, total, wrong, blank]) => { return { net, total, wrong, blank, true: total - wrong - blank } })
 
-        this.duration = duration.split('.')
-	this.duration[1] = (this.duration[1] * 3/5 / 10 ** (this.duration[1].length - 2) + '').split('.')[0]
-	while (this.duration[1].length < 2) this.duration[1] = '0' + this.duration[1]
-	this.duration = (+this.duration.join('.')).toFixed(2)
+        this.duration = minuteIntegerToString(duration)
+	this._duration = duration
 
         this.timestamp = new Date(timestamp)
         if (publisher) this.publisher = publisher
@@ -173,7 +179,10 @@ class Exam {
     async format(req) {
         if (req) return { ...(this.publisher ? {} : { publishers: [this.publisherId] }), ...(this.category ? {} : { 'exams.categories': [this.categoryId] }) }
         if (!this.publisher) this.publisher = await this._session.get('publisher', this.publisherId)
-        if (!this.category) this.category = await this._session.get('exam.category', this.categoryId)
+        if (!this.category) {
+	    this.category = await this._session.get('exam.category', this.categoryId)
+	    this.durationPerQuestion = minuteIntegerToString(this._duration / this.category.questionCount)
+	}
     }
 
     get fullName() { return `${this.publisher.name} ${this.category.name} - ${this.name}` }

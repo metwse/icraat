@@ -1,4 +1,4 @@
-﻿const d = document
+const d = document
 const session = new icraat.Session()
 var r = root = d.getElementById('root')
 
@@ -7,9 +7,8 @@ AsyncFunction = Object.getPrototypeOf(async () => { }).constructor
 async function load(fn) {
     load._.style.display = 'block', mouse.disable()
     const res = await fn()
+    load._.style.display = 'none'
     mouse.enable()
-    load._.animate([{ }, { height: 0 }], { duration: 300, itarations: 1 })
-    setTimeout(() => load._.style.display = 'none', 300)
     return res
 }
 load._ = d.getElementById('load')

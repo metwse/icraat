@@ -1,0 +1,18 @@
+icraat-exam { display: flex; padding: 1em; margin: 1em 0; border: 1px solid var(--bg-3); border-radius: 1em }
+icraat-exam .general { flex-grow: 1 }
+icraat-exam  .details { display: flex; align-items: center; gap: 1em }
+icraat-exam   .category { padding: .125em .25em; background: var(--bg-3); border-radius: .25em }
+icraat-exam  .name { display: block; text-decoration: underline var(--t-1); font-size: 1.3em }
+icraat-exam  .date { opacity: .5 }
+icraat-exam .actions { display: flex; align-items: center; flex-direction: column; justify-content: space-between }
+icraat-exam .actions button { padding: .25em; width: 2em; height: 2em; border-radius: 50% }
+icraat-exam .actions .select { display: none; width: 1.5em; height: 1.5em; background: var(--color); border-radius: .25em }
+icraat-exam .actions .select:hover { cursor: pointer }
+icraat-exam.active .actions .select { background: var(--t-1) }
+
+icraat-loading { display: block; margin: 1em auto; width: 1.5em; height: 1.5em; border: .25em solid var(--bg-3); border-radius: 100%; border-right-color: transparent; animation: icraat-loading .5s linear infinite }
+
+@keyframes icraat-loading {
+    0% { transform: rotate(0deg) }
+    100% { transform: rotate(360deg) }
+}

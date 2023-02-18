@@ -1,0 +1,91 @@
+﻿<script init>
+    r.data = await session.get('exam', app.location.pathname[1] || 1)
+</script>
+
+<button class="back" onclick="app.redirect('/')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
+    </svg>
+</button>
+<h2>
+    <span class="category">CATEGORY</span>
+    <span class="name">NAME</span>
+    <span class="publisher">PUBLISHER</span>
+</h2>
+<ul class="stats">
+    <li style="background: #2D54D3"><span class="text">0</span><span>Toplam Soru</span></li>
+    <li style="background: #2D54D3"><span class="text">0</span><span>Çözülme Süresi</span></li>
+    <li style="background: #2ECA8B"><span class="text">0</span><span>Doğru</span></li>
+    <li style="background: #E53F55"><span class="text">0</span><span>Yanlış</span></li>
+    <li style="background: #16A3B5"><span class="text">0</span><span>Boş</span></li>
+    <li style="background: #EF7424"><span class="text">0</span><span>Net</span></li>
+    <li style="background: #5A6C90"><span class="text">0</span><span>Başarı</span></li>
+</ul>
+<ul class="lessons"></ul>
+
+<style>
+    .r .back { padding: .25em; width: 2em; height: 2em; border-radius: 50%; position: absolute }
+    .r .back svg { opacity: .7 }
+
+    .r h2  * { display: block; margin: 0 auto; width: fit-content; font-weight: normal }
+    .r h2  .name { font-size: 1.5em;  text-decoration: underline var(--t-1) }
+    .r h2  .category { padding: .125em .25em; background: var(--bg-3); border-radius: .25em }
+
+    .r .stats { margin: 0; padding: 0 }
+    .r .stats li { display: flex; margin: 1em auto; padding: .5em; max-width: 18em; border-radius: .5em; flex-direction: column; align-items: center; list-style-type: none }
+    .r .stats li .text { font-size: 1.25em }
+
+    .r .lessons { margin: 3em 0 0; padding: 0 }
+    .r .lessons li { display: flex; margin: 1em auto; padding: .5em; max-width: 24em; height: 12em; background: var(--bg-3); align-items: center; flex-direction: column; list-style-type: none; border-radius: .5em }
+    .r .lessons li:has(icraat-loading) { display: grid; place-items: center }
+    .r .lessons li icraat-loading { border-color: var(--bg-2) var(--bg-2) transparent }
+</style>
+
+<script>
+    var stats = r.querySelector('.stats')
+    stats.elements = stats.getElementsByTagName('li')
+    ![r.data.category.questionCount, r.data.duration + 'dk', r.data.totalTrue, r.data.totalWrong, r.data.totalBlank, r.data.net, (r.data.net * 100 / r.data.category.questionCount).toFixed(2) + '%'].forEach((v, index) => stats.elements[index].querySelector('.text').innerText = v)
+
+    var h2 = r.querySelector('h2')
+    Object.entries({
+        category: r.data.category.name,
+        name: r.data.name,
+        publisher: r.data.publisher.name,
+    }).forEach(([key, value]) => h2.querySelector('.' + key).innerText = value)
+
+
+    var lessons = r.querySelector('.lessons'), data = {}
+    r.data.category.schema.forEach(v => {
+        let element = d.createElement('li')
+        element.innerHTML = `<icraat-loading></icraat-loading>`
+        lessons.appendChild(element)
+    })
+
+    google.load('visualization', '1', { packages: ['corechart'] });
+    google.setOnLoadCallback(() => {
+        const options = {
+            backgroundColor: '#414141',
+            legend: { position: 'labeled', textStyle: { color: 'white' } },
+            pieSliceText: 'value',
+            slices: {
+                0: { color: '#2ECA8B' },
+                1: { color: '#E53F55' },
+                2: { color: '#16A3B5' },
+                3: { color: '#EF7424' }
+            },
+            titleTextStyle: { color: 'white' }
+        }
+
+        lessons.childNodes.forEach((element, index) => {
+            let chart = new google.visualization.PieChart(element)
+            let stat = r.data.stats[index], data = [
+                ['string', 'integer'],
+                ['Doğru', stat.true],
+                ['Yanlış', stat.wrong],
+                ['Boş', stat.blank]
+            ]
+
+            chart.draw(new google.visualization.arrayToDataTable(data), { ...options, title: r.data.category.schema[index][0].name, pieStartAngle: Math.random() * 360 })
+        })
+    })
+</script>

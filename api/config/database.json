@@ -1,0 +1,7 @@
+{
+  "host": "localhost",
+  "user": "postgres",
+  "database": "icraat",
+  "password": "localhost-pss",
+  "port": "5432"
+}

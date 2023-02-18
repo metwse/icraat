@@ -1,0 +1,90 @@
+﻿<script init>
+    r.data = (await session.bulkGet({ exams: app.location.pathname[1].split(',').map(v => parseInt(v)) })).exams
+</script>
+
+<button class="back" onclick="app.redirect('/')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
+    </svg>
+</button>
+<ul class="exams">
+
+</ul>
+<ul class="charts">
+    <li><icraat-loading class="initial"></icraat-loading></li>
+    <li><icraat-loading class="initial"></icraat-loading></li>
+    <li><icraat-loading class="initial"></icraat-loading></li>
+</ul>
+
+<style>
+    .r .back { padding: .25em; width: 2em; height: 2em; border-radius: 50%; position: absolute }
+    .r .back svg { opacity: .7 }
+    
+    .r .exams { display: flex; margin: 2em; padding: 0; flex-wrap: wrap; gap: .25em }
+    .r .exams li { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em; list-style-type: none }
+    .r .exams  li .publisher { text-transform: uppercase }
+    .r .exams  li .name { text-decoration: underline var(--t-1) }
+
+    .r .charts { display: flex; margin: 0; padding: 0; flex-direction: column; gap: 1em }
+    .r .charts li { height: 20em; list-style-type: none }
+    .r .charts li:has(icraat-loading) { display: grid; border: .06125em solid var(--bg-3); place-items: center; border-radius: .5em }
+</style>
+
+<script>
+    var exams = r.querySelector('.exams')
+    exams.add = exam => {
+        const li = d.createElement('li')
+        li.innerHTML = `<span class="publisher">PUBLISHER</span>: <span class="category">CATEGORY</span> <span class="name">NAME</span>`
+        li.dataset.id = exam.id
+        li.querySelector('.name').innerText = exam.name
+        li.querySelector('.publisher').innerText = exam.publisher.name
+        li.querySelector('.category').innerText = exam.category.name
+        exams.appendChild(li)
+    }
+    r.data.forEach(exams.add)
+
+    google.charts.load('current', { 'packages': ['corechart'] })
+    google.charts.setOnLoadCallback(() => {
+        const options = {
+            backgroundColor: '#313131',
+            chartArea: { backgroundColor: '#414141', titleTextStyle: { color: 'white' } },
+            vAxis: { gridlines: { color: '#787878' }, textStyle: { color: 'white', opacity: .5 } },
+            hAxis: { textStyle: { color: 'white', opacity: .5 }, slantedText: true, slantedTextAngle: 45 },
+            titleTextStyle: { color: 'white' },
+            legend: { textStyle: { color: 'white', opacity: .75 } }
+        }
+
+        r.querySelector('icraat-loading.initial').remove()
+
+        var data = [
+            [
+                'netler',
+                [['Deneme Sınavı', 'Net']]
+            ],
+            [
+                'yanlış ve boşlar',
+                [['Deneme Sınavı', 'Yanlış', 'Boş']],
+                'SteppedAreaChart'
+            ],
+            [
+                'çözme süresi',
+                [['Deneme Sınavı', 'Dakika']],
+                'BarChart'
+            ]
+        ]
+
+        r.data.forEach(exam => {
+            data[0][1].push([`${exam.shortName}`, exam.net])
+            data[1][1].push([`${exam.shortName}`, exam.totalWrong, exam.totalBlank])
+            data[2][1].push([`${exam.shortName}`, +exam.duration])
+        })
+
+
+        const elements = r.querySelectorAll('.charts li')
+
+        elements.forEach((element, index) => {
+            let chart = new google.visualization[data[index][2] ?? 'LineChart'](element)
+            chart.draw(new google.visualization.arrayToDataTable(data[index][1]), { ...options, title: data[index][0].toUpperCase() })
+        })
+    })
+</script>

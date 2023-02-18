@@ -1,0 +1,10 @@
+﻿{
+  "100": [ "Bad request", 400 ],
+  "101": [ "Unauthorized", 401 ],
+  "102": [ "Forbidden", 403 ],
+  "103": [ "Not found", 404 ],
+  "104": [ "$1", 429 ],
+  "105": [ "Wrong mime", 400 ],
+  "106": [ "Missing param $1: $2", 400 ],
+  "107": [ "Invalid payload scheme, $1: $2", 400 ]
+}

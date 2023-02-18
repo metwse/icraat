@@ -1,0 +1,53 @@
+* { box-sizing: border-box; color: inherit; font-size: inherit; font-family: inherit; -webkit-tap-highlight-color: transparent }
+
+:root {
+    --bg-1: #212121;
+    --bg-2: #313131;
+    --bg-3: #414141;
+    
+    --t-1: #a70bcc;
+
+    --shadow-1: black;
+    
+    --color: white;
+    --inverse-color: black;
+    --color-2: #D1D1D1;
+    --color-3: #A1A1A1;
+}
+
+._inline-img { display: inline-flex; align-items: center }
+._inline-img svg, ._inline-img img { height: 1em }
+
+button { background: var(--bg-3); border: none; transition: filter .1s }
+button:hover { cursor: pointer; filter: brightness(1.05) }
+button:active { cursor: pointer; filter: brightness(1.1) }
+input { background: none; outline: none }
+
+body { display: grid; margin: 0; background: var(--bg-1); font-family: rubik, sans-serif; color: var(--color); place-content: center; place-items: center; overflow: hidden }
+body > *  { grid-area: 1 / 1 }
+
+
+#initial-load { display: flex; z-index: 9999; padding-top: 16em; width: 100vw; height: 100vh; background: var(--bg-1); flex-direction: column; align-items: center; transition: opacity ease .1s}
+#initial-load span { font-size: 3.5em; margin-bottom: .1em }
+#initial-load > div { background: var(--bg-2); width: min(32em, calc(100% - 4em)); height: .25em; border-radius: .25em; overflow: hidden}
+#initial-load .loader { background: var(--t-1); width: 8em; height: 100%; animation: initial-load .75s ease-in-out alternate infinite }
+@keyframes initial-load { 0% { transform: translateX(-10em) } 100% { transform: translateX(min(34em, calc(100vw - 2em))) } }
+
+
+#load { z-index: 9998; display: none; width: 8em; height: .2em; position: absolute; top: 0; left: 0; background: var(--color); opacity: .5; animation: load .75s ease-in-out alternate infinite }
+@keyframes load { 0% { transform: translateX(-100%) } 100% { transform: translateX(100vw) } }
+
+
+#disable-mouse { display: none; width: 100vw; height: 100vh; z-index: 9997 }
+#disable-mouse:hover { cursor: wait }
+
+
+main { display: flex; width: 100vw; height: 100vh; background: var(--bg-2); flex-direction: column; overflow: hidden }
+@media (min-width: 600px) {
+    main { width: min(calc(100vw - 2em), 600px); height: calc(100vh - 2em); border-radius: .5em; box-shadow: var(--shadow-1) .1em .1em .1em }
+}
+
+#root { width: 100%; padding: 1em; position: relative; flex-grow: 1; overflow-y: auto }
+
+::-webkit-scrollbar { width: 16px }
+::-webkit-scrollbar-thumb { background-color: var(--bg-3); border-radius: 8px; border: 4px solid transparent; background-clip: padding-box }

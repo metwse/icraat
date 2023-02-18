@@ -1,0 +1,105 @@
+﻿const d = document
+const session = new icraat.Session()
+var r = root = d.getElementById('root')
+
+AsyncFunction = Object.getPrototypeOf(async () => { }).constructor
+
+async function load(fn) {
+    load._.style.display = 'block', mouse.disable()
+    const res = await fn()
+    mouse.enable()
+    load._.animate([{ }, { height: 0 }], { duration: 300, itarations: 1 })
+    setTimeout(() => load._.style.display = 'none', 300)
+    return res
+}
+load._ = d.getElementById('load')
+
+async function fetchStream(url, fetchInit) {
+    return await fetch(url, fetchInit).then((res) => {
+        var contentLenght = res.headers.get('Content-Length'), downloadLength = 0
+        const reader = res.body.getReader()
+        return new Response(new ReadableStream({
+            start(controller) {
+                return (pump = () => {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) { controller.close(); return }
+                        controller.enqueue(value); downloadLength += value.length
+                        parseInt(downloadLength / contentLenght * 100)
+                        return pump()
+                    })
+                })()
+            }
+        }))
+    })
+}
+
+const mouse = {
+    _state: true,
+    _element: d.getElementById('disable-mouse'),
+    set state(s) { this._state = s, this._element.style.display = ['none', 'block'][+!s] },
+    get state() { return this._state },
+    enable() { this.state = true },
+    disable() { this.state = false }
+}
+
+const app = {
+    location: {
+        search: [],
+        pathname: [],
+        format() {
+            return [this.pathname, this.search] = [location.pathname.slice(1).split('/').map(v => decodeURI(v)), new URLSearchParams(location.search)]
+        }
+    },
+    template: {
+        data: {},
+        debug: localStorage.getItem('debug') == 'true',
+        async render(name) {
+            await load(async () => {
+                var data = await fetchStream(`/pages/${name}.html`).then(res => res.text()), scripts = [[], '']
+                var oldRoot = root
+                r = root = d.createElement('div'), root.id = 'root', root.className = 'r root'
+                data = data.replace(/<script(.*?)>([\S\s]*?)<\/script>/g, (_, attr, script) => {
+                    var script_ = d.createElement('script')
+                    attr.replace(/\s(\w+)\s*=\s*"(.*?)"/g, (_, key, value) => { script_.setAttribute(key, value); return '' })
+                        .replace(/\s*=\s*/g, '=').split(' ').forEach(v => {
+                            let k = v.split('=')
+                            if (k[0]) script_.setAttribute(k[0], k[1] || k[0])
+                        })
+                    if (script_.getAttribute('init')) { scripts[1] += script + ';' }
+                    else {
+                        script_.innerHTML = this.debug ? script : `(() => {${script}})()`
+                        scripts[0].push(script_)
+                    }
+                    return ''
+                })
+                await AsyncFunction(scripts[1])()
+                root.innerHTML = data
+                for (let script of scripts[0]) root.appendChild(script)
+                oldRoot.parentElement.replaceChild(root, oldRoot)
+                r = root = root
+                return
+            })
+        }
+    },
+    async redirect(path, title) {
+        history.pushState(null, title, path)
+        await this.load()
+    },
+    async load() {
+        this.location.format()
+        switch (this.location.pathname[0]) {
+            case '': return await this.template.render('homepage')
+            case 'sonuç': return await this.template.render('result')
+            case 'analiz': return await this.template.render('analyze')
+            default: return await this.template.render('404')
+        }
+    }
+}
+
+
+onload = async () => {
+    await app.load()
+    var initialLoad = d.getElementById('initial-load')
+    initialLoad.style.opacity = '0'
+    setTimeout(() => initialLoad.remove(), 100)
+}

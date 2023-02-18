@@ -190,7 +190,7 @@ class Exam {
     get totalWrong() { return this.stats.map(v => v.wrong).reduce((a, b) => a + b) }
     get totalBlank() { return this.stats.map(v => v.blank).reduce((a, b) => a + b) }
     get questionCount() { return this.stats.map(v => v.total).reduce((a, b) => a + b) }
-    get durationPerQuestion() { return minuteIntegerToString(this._duration / this.questionCount) }
+    get durationPerQuestion() { return (this._duration * 60 / this.questionCount).toFixed(2) }
 }
 
 

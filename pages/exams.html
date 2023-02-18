@@ -180,8 +180,7 @@
     filter.ul = filter.querySelector('i-fancylist')
     filter.ul.schema = '{data.name}'
     filter.ul.onremove = data => {
-        const key = ({ Publisher: 'publishers', Category: 'exams.categories' })[Object.getPrototypeOf(data).constructor.name], index = filter.active[key].indexOf(data)
-        if (index != -1) filter.active[key].splice(index, 1)
+        filter.active[({ Publisher: 'publishers', Category: 'exams.categories' })[Object.getPrototypeOf(data).constructor.name]].remove(data)
         exams.search(search.value, filter.active, 300)
     }
     filter.active = { 'publishers': [], 'exams.categories': [] }

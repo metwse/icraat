@@ -30,8 +30,9 @@ async function fetchStream(url, fetchInit) {
     })
 }
 Array.prototype.remove = function (value) {
-    var i = this.findIndex(value), r = 0
-    while (i != -1) this.splice(i, 1), i = this.findIndex(value), (r++)
+    const isFn = typeof value == 'function'
+    var i = isFn ? this.findIndex(value) : this.indexOf(value), r = 0
+    while (i != -1) this.splice(i, 1), i = isFn ? this.findIndex(value) : this.indexOf(value), (r++)
     return r
 }
 

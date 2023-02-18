@@ -1,6 +1,6 @@
 i-exam { display: flex; padding: 1em; margin: 1em 0; border: 1px solid var(--bg-3); border-radius: 1em }
 i-exam .general { flex-grow: 1 }
-i-exam  .details { display: flex; align-items: center; gap: 1em }
+i-exam  .details { display: flex; align-items: center; flex-wrap: wrap; column-gap: 1em }
 i-exam   .category { padding: .125em .25em; background: var(--bg-3); border-radius: .25em }
 i-exam  .name { display: block; text-decoration: underline var(--t-1); font-size: 1.3em }
 i-exam  .date { opacity: .5 }
@@ -16,10 +16,10 @@ i-exams i-loading { display: none }
 i-exams.loading i-loading { display: block }
 
 
-i-fancylist { display: flex; margin: .25em 0 0; padding: 0; flex-wrap: wrap; gap: .25em }
+i-fancylist { display: flex; flex-wrap: wrap; gap: .25em }
 i-fancylist > div { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em }
-
-
+i-fancylist[clicktoremove] > div:hover { cursor: pointer } 
+i-fancylist[nowrap] { flex-wrap: nowrap; overflow-x: auto }
 i-fancylist hr { display: inline-block; width: 1px; height: 2em; margin: 0; background: var(--bg-3); border: none }
 i-fancylist::-webkit-scrollbar { height: 4px }
 i-fancylist::-webkit-scrollbar-thumb { border-width: 0 }

@@ -7,9 +7,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
     </svg>
 </button>
-<ul class="exams">
-
-</ul>
+<i-fancylist></i-fancylist>
 <ul class="charts">
     <li><i-loading class="initial"></i-loading></li>
     <li><i-loading class="initial"></i-loading></li>
@@ -30,20 +28,16 @@
     .r .charts { display: flex; margin: 0; padding: 0; flex-direction: column; gap: 1em }
     .r .charts li { height: 20em; list-style-type: none }
     .r .charts li:has(i-loading) { display: grid; border: .06125em solid var(--bg-3); place-items: center; border-radius: .5em }
+
+    i-fancylist { padding: 1em 2em }
+    i-fancylist div .publisher { text-transform: uppercase }
+    i-fancylist div .name { text-decoration: underline var(--t-1) }
 </style>
 
 <script>
-    var exams = r.querySelector('.exams')
-    exams.add = exam => {
-        const li = d.createElement('li')
-        li.innerHTML = `<span class="publisher">PUBLISHER</span>: <span class="category">CATEGORY</span> <span class="name">NAME</span>`
-        li.dataset.id = exam.id
-        li.querySelector('.name').innerText = exam.name
-        li.querySelector('.publisher').innerText = exam.publisher.name
-        li.querySelector('.category').innerText = exam.category.name
-        exams.appendChild(li)
-    }
-    r.data.forEach(exams.add)
+    var exams = r.querySelector('i-fancylist')
+    exams.schema = '<span class="publisher">{data.publisher.name}</span>: <span class="category">{data.category.name}</span> <span class="name">{data.name}</span>'
+    exams.concat(r.data)
 
     google.charts.load('current', { 'packages': ['corechart'] })
     google.charts.setOnLoadCallback(() => {

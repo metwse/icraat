@@ -166,11 +166,7 @@ class IcraatFancyList extends HTMLElement {
     }
     remove(data, by) { 
         for (let child of this.children) if (eval(`child.data${by ?? ''} == data`)) child.remove()
-        var i = false
-        while (i != -1) {
-            if (i !== false) this._list.splice(i, 1)
-            i = this._list.findIndex(e => eval(`e.data${by} == data`))
-        }
+        this._list.remove(e => eval(`e.data${by} == data`))
     }
     clear() { this._list = [], this.innerHTML = '' }
 }

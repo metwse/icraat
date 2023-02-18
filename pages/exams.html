@@ -1,5 +1,5 @@
 ﻿<script init>
-    r.data = await session.exams.dashboard()
+    r.data = await session.dashboard.exams()
 </script>
 
 
@@ -204,7 +204,7 @@
         exams.list.innerHTML = '', exams.classList.add('loading')
         const random = Math.random()
         selectFilter.random.search = random
-        const data = await session.exams.search('exams', search.value, { filter: `${filter.active['publishers'].map(v => v.id)};${filter.active['exams.categories'].map(v => v.id)}` })
+        const data = await session.dashboard.examsSearch('exams', search.value, { filter: `${filter.active['publishers'].map(v => v.id)};${filter.active['exams.categories'].map(v => v.id)}` })
         if (selectFilter.random.search == random) exams.load(data), exams.classList.remove('loading')
     }
 
@@ -242,7 +242,7 @@
             self.ul.innerHTML = ''
             const random = Math.random()
             self.random.search = random
-            var data = await session.exams.search(type, query)
+            var data = await session.dashboard.examsSearch(type, query)
             if (self.random.search = random) {
                 self.classList.remove('loading')
                 self.add(data)
@@ -292,7 +292,7 @@
 
         const random = Math.random()
         selectFilter.random.load = random
-        filters = await session.exams.dashboardFilters()
+        filters = await session.dashboard.examsFilters()
         if (selectFilter.random.load == random) selectFilter.load(filters)
     }
     //#endregion

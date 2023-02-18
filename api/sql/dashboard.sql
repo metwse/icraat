@@ -1,5 +1,5 @@
-﻿-- DROP FUNCTION IF EXISTS get_dashboard;
-CREATE OR REPLACE FUNCTION get_dashboard()
+﻿-- DROP FUNCTION IF EXISTS exams.get_dashboard;
+CREATE OR REPLACE FUNCTION exams.get_dashboard()
 RETURNS TABLE (exams integer[], publishers integer[], lessons integer[], "exams.categories" integer[]) 
 LANGUAGE plpgsql AS $$
 DECLARE
@@ -25,8 +25,8 @@ END $$;
 
 
 
--- DROP FUNCTION IF EXISTS get_filters;
-CREATE OR REPLACE FUNCTION get_filters()
+-- DROP FUNCTION IF EXISTS exams.get_filters;
+CREATE OR REPLACE FUNCTION exams.get_filters()
 RETURNS TABLE (publishers integer[], lessons integer[], "exams.categories" integer[]) 
 LANGUAGE plpgsql AS $$
 DECLARE
@@ -45,4 +45,14 @@ BEGIN
 	END LOOP;
 	
 	RETURN QUERY SELECT __publishers, __lessons, __exams_categories;
+END $$;
+
+
+
+-- DROP FUNCTION IF EXISTS questions.get_dashboard;
+CREATE OR REPLACE FUNCTION questions.get_dashboard()
+RETURNS TABLE(days_before integer, questions integer[])
+LANGUAGE plpgsql AS $$
+BEGIN
+	RETURN QUERY SELECT series, questions.get_interval(CURRENT_DATE - make_interval(0, 0, 0, series), CURRENT_DATE -  make_interval(0, 0, 0, series - 1)) FROM generate_series(0,6,1) AS series;
 END $$;

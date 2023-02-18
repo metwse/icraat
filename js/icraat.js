@@ -125,18 +125,18 @@ class Session {
         return query
     }
     
-    exams = {
+    dashboard = {
         session: this,
-        async dashboard() {
+        async exams() {
             var [data] = await this.session.request('/dashboard/exams')
             return (await this.session.bulkGet(data)).exams
         },
-        async dashboardFilters() {
+        async examsFilters() {
             var [data] = await this.session.request('/dashboard/exams/filters')
             data = await this.session.bulkGet(data)
             return { publishers: data.publishers, 'exams.categories': data['exams.categories'] }
         },
-        async search(param, text, opt) {
+        async examsSearch(param, text, opt) {
             const mapped = Session.PLURAL_MAPPINGS[param] ?? param
             var [data, ok] = await this.session.request(`/${mapped.replace(/\./, '/')}/search?q=${text}&filter=${opt?.filter}`)
             if (!ok) throw IcraatError(data)

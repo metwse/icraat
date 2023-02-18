@@ -113,13 +113,18 @@ app.post('/bulk', async (req, res) => {
 
 
 //#region -- -- -- -- DASHBOARD
+app.get('/dashboard', async (req, res) => {
+    const [{ rows: [exams] }, { rows: questions }] = await client.query(`SELECT * FROM exams.get_dashboard(); SELECT * FROM questions.get_dashboard()`)
+    res.json({ exams, questions })
+})
+
 app.get('/dashboard/exams', async (req, res) => {
-    const { rows: [data] } = await client.query(`SELECT * FROM get_dashboard()`)
+    const { rows: [data] } = await client.query(`SELECT * FROM exams.get_dashboard()`)
     res.json(data)
 })
 
 app.get('/dashboard/exams/filters', async (req, res) => {
-    const { rows: [data] } = await client.query(`SELECT * FROM get_filters()`)
+    const { rows: [data] } = await client.query(`SELECT * FROM exams.get_filters()`)
     res.json(data)
 })
 //#endregion

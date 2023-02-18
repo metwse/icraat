@@ -158,7 +158,8 @@ class Exam {
         this.stats = nets.map(lesson => lesson.map(net => parseFloat(net))).map(([net, total, wrong, blank]) => { return { net, total, wrong, blank, true: total - wrong - blank } })
 
         this.duration = duration.split('.')
-	this.duration[1] *=  3/5
+	this.duration[1] = (this.duration[1] * 3/5 / 10 ** (this.duration[1].length - 2) + '').split('.')[0]
+	while (this.duration[1].length < 2) this.duration[1] = '0' + this.duration[1]
 	this.duration = (+this.duration.join('.')).toFixed(2)
 
         this.timestamp = new Date(timestamp)

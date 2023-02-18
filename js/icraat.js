@@ -1,6 +1,4 @@
-const url = {
-	backend: '/api'
-}
+const url = { backend: '/api' }
 
 
 class IcraatError extends Error {

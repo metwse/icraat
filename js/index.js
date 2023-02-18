@@ -1,4 +1,4 @@
-const d = document
+﻿const d = document
 const session = new icraat.Session()
 var r = root = d.getElementById('root')
 
@@ -94,6 +94,10 @@ const app = {
             case 'analiz': return await this.template.render('analyze')
             default: return await this.template.render('404')
         }
+    },
+    back() {
+        if (this.location.pathname[0] && !this.history.length) this.template.render('homepage'), history.replaceState(null, null, '/'), this.location.format()
+	else history.back()
     }
 }
 

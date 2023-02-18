@@ -75,10 +75,10 @@
             </div>
         </div>
 
-        <icraat-exams>
+        <div class="exams">
             <icraat-loading></icraat-loading>
             <div class="list"></div>
-        </icraat-exams>
+        </div>
 
         <div class="select-filter">
             <nav>
@@ -123,8 +123,10 @@
     
     /* ** ** ** ** */
 
-    .r .content icraat-exams icraat-loading { display: none }
-    .r .content icraat-exams.loading icraat-loading { display: block }
+    .r .content .exams icraat-loading { display: none }
+    .r .content .exams.loading icraat-loading { display: block }
+    .r.analyze .content .exams icraat-exam .select { display: block }
+    .r.analyze .content .exams icraat-exam .view { display: none }
 
     /* ** ** ** ** */
 
@@ -154,7 +156,7 @@
     .r.analyze .content .analyze button .stop { display: inline-flex !important }
     .r.analyze .content .analyze .analyze { display: block !important }
 
-    /*{{{ SELECT FILTER */
+    /*#region -- -- -- -- SELECT FILTER */
 
     .r .content .select-filter { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: var(--bg-2); z-index: 99 }
     
@@ -176,21 +178,38 @@
     .r .content .select-filter section icraat-loading { display: none }
     .r .content .select-filter section.loading icraat-loading { display: block }
 
-    /*}}}*/
+    /*#endregion*/
 </style>
 
 <script>
     var search = r.querySelector('.top input')
     search.oninput = () => {
         clearTimeout(search.timeout)
-        search.timeout = setTimeout(() => exams.search(search.value, filter.active), 300)
+        search.timeout = setTimeout(() => exams.search(), 300)
     }
 
 
-    var exams = r.querySelector('icraat-exams')
+    var exams = r.querySelector('.exams')
+    exams.list = exams.querySelector('.list')
+    exams.load = data => {
+        for (let exam of data) {
+            let elem = d.createElement('icraat-exam')
+            elem.attach(exam)
+            elem.oncheck = analyze.add
+            elem.checked = analyze.list.includes(exam)
+            exams.list.appendChild(elem)
+        }
+    }
+    exams.search = async () => {
+        exams.list.innerHTML = '', exams.classList.add('loading')
+        const random = Math.random()
+        selectFilter.random.search = random
+        const data = await session.dashboard.examsSearch('exams', search.value, { filter: `${filter.active['publishers'].map(v => v.id)};${filter.active['exams.categories'].map(v => v.id)}` })
+        if (selectFilter.random.search == random) exams.load(data), exams.classList.remove('loading')
+    }
 
 
-    //{{{ FILTER 
+    //#region -- -- -- -- FILTER
     var filter = r.querySelector('.filter')
     filter.button = filter.querySelector('button')
     filter.list = filter.querySelector('.list')
@@ -256,7 +275,7 @@
             }
             i++
         }
-        exams.search(search.value, filter.active)
+        exams.search()
 
 	return false
     }
@@ -276,7 +295,7 @@
         filters = await session.dashboard.examsFilters()
         if (selectFilter.random.load == random) selectFilter.load(filters)
     }
-    //}}}
+    //#endregion
 
 
     var analyze = r.querySelector('.analyze')
@@ -292,28 +311,32 @@
         li.querySelector('.category').innerText = exam.category.name
         analyze.ul.appendChild(li)
     }
-    analyze.ul.remove = exam => { for (let li of analyze.ul.children) if (li.dataset.id == exam.id) return li.remove() }
+    analyze.ul.remove = exam => {
+        for (let li of analyze.ul.childNodes) if (li.dataset.id == exam.id) return li.remove()
+    }
 
+    analyze.list = []
     analyze.button.onclick = () => {
         if (r.classList.contains('analyze')) {
             r.classList.remove('analyze')
+            analyze.list = []
             analyze.ul.innerHTML = ''
-            exams.select.stop()
+            for (let i of Array.from(exams.list.childNodes)) i.checked = false
             return 
         }
         r.classList.add('analyze')
-        const list = exams.select.start()
-        list.onadd = e => analyze.ul.add(e)
-        list.onremove = e => analyze.ul.remove(e)
-        list.onclear = () => analyze.ul.innerHTML = ''
+        
+    }
+    analyze.add = element => {
+        if (element.checked) analyze.list.push(element.exam), analyze.ul.add(element.exam)
+        else analyze.list.splice(analyze.list.indexOf(element.exam), 1), analyze.ul.remove(element.exam)
     }
     Object.entries({
-        'button.all': () => { exams.select.all(true) },
-        'button.clear': () => { exams.select.clear() },
-        'button.ok': () => app.redirect(`/analiz/${exams.select.list.map(v => v.id)}`)
+        'button.all': () => { for (let i of Array.from(exams.list.childNodes).reverse()) if (!i.checked) i.checked = true, i.oncheck(i) },
+        'button.clear': () => { analyze.ul.innerHTML = ''; for (let i of Array.from(exams.list.childNodes)) i.checked = false, i.oncheck(i); analyze.list = [] },
+        'button.ok': () => app.redirect(`/analiz/${analyze.list.map(exam => exam.id)}`)
     }).forEach(([item, listener]) => analyze.querySelector(item).onclick = listener)
 
 
-
-    exams.concat(r.data)
+    exams.load(r.data)
 </script>

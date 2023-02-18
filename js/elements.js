@@ -3,6 +3,7 @@
         super()
         this._checked = false
     }
+
     attach(exam) {
         this.exam = exam
         this.innerHTML = `
@@ -31,6 +32,7 @@
             if (this.oncheck) this.oncheck(this)
         }
     }
+
     set checked(v) {
         if (v) this.classList.add('active')
         else this.classList.remove('active')
@@ -38,3 +40,67 @@
     }
     get checked() { return this._checked }
 })
+
+
+
+
+
+class IcraatExams extends HTMLElement {
+    static List = class extends Array {
+        constructor(listElement) {
+            super()
+            this.element = listElement
+            this.onadd = this.onremove = this.onclear = null 
+        }
+        toggle(elem) { if (!this.includes(elem.exam)) this.add(elem); else this.remove(elem) }
+        add({ exam }) { if (!this.includes(exam)) this.push(exam), this.onadd && this.onadd(exam) }
+        remove({ exam }) { const index = this.indexOf(exam); if (index != -1) this.splice(index, 1), this.onremove && this.onremove(exam) }
+        clear() { this.splice(0), this.onclear && this.onclear() }
+        reset() { this.splice(0), this.onadd = this.onremove = this.onclear = null }
+    }
+
+    constructor() {
+        super()
+        this._checked = false
+        this.mode = 'normal'
+        this.random = {}
+    }
+    
+    concat(data) { for (let exam of data) this.push(exam) }
+    push(exam) {
+        let elem = document.createElement('icraat-exam')
+        elem.attach(exam)
+        elem.oncheck = () => this.select.list.toggle(elem)
+        elem.checked = this.select.list.includes(exam)
+        this.appendChild(elem)
+    }
+
+    select = {
+        elem: this,
+        list: new IcraatExams.List(this),
+        start() {
+            this.elem.mode = 'select'
+            this.elem.classList.add('select')
+            this.clear()
+            return this.list 
+        },
+        clear() { this.list.clear(); for (let child of this.elem.children) if (child.tagName == 'ICRAAT-EXAM') child.checked = false },
+        all(reverse) { for (let child of reverse ? Array.from(this.elem.children).reverse() : this.elem.children) if (child.tagName == 'ICRAAT-EXAM') child.checked = true, this.list.add(child) },
+        stop() {
+            this.elem.mode = 'normal'
+            this.elem.classList.remove('select')
+        }
+    }
+
+
+    async search(query, filter) {
+        this.innerHTML = '', this.classList.add('loading')
+        const random = Math.random()
+        this.random.search = random
+        const data = await eval('session').dashboard.examsSearch('exams', query, { filter: `${filter['publishers'].map(v => v.id)};${filter['exams.categories'].map(v => v.id)}` })
+        if (this.random.search == random) this.concat(data), this.classList.remove('loading')
+    }
+}
+
+
+customElements.define('icraat-exams', IcraatExams)

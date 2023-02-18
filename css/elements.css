@@ -9,9 +9,11 @@ icraat-exam .actions button { padding: .25em; width: 2em; height: 2em; border-ra
 icraat-exam .actions .select { display: none; width: 1.5em; height: 1.5em; background: var(--color); border-radius: .25em }
 icraat-exam .actions .select:hover { cursor: pointer }
 icraat-exam.active .actions .select { background: var(--t-1) }
+icraat-exams.select icraat-exam .select { display: block }
+icraat-exams.select icraat-exam .view { display: none }
+
 
 icraat-loading { display: block; margin: 1em auto; width: 1.5em; height: 1.5em; border: .25em solid var(--bg-3); border-radius: 100%; border-right-color: transparent; animation: icraat-loading .5s linear infinite }
-
 @keyframes icraat-loading {
     0% { transform: rotate(0deg) }
     100% { transform: rotate(360deg) }

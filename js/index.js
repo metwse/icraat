@@ -91,6 +91,7 @@ const app = {
         switch (this.location.pathname[0]) {
             case '': return await this.template.render('homepage')
             case 'sınavlar': return await this.template.render('exams')
+            case 'sınavlar-eski': return await this.template.render('exams-old')
             case 'sonuç': return await this.template.render('result')
             case 'analiz': return await this.template.render('analyze')
             default: return await this.template.render('404')

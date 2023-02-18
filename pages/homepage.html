@@ -285,7 +285,7 @@
             selectFilter[filter].classList.add('loading')
             selectFilter[filter].ul.innerHTML = ''
         }
-        app.history.onpopstate = () => selectFilter.style.display = 'none'
+        app.history.onpopstate = selectFilter.close.onclick
         history.pushState(null, null)
 
         const random = Math.random()

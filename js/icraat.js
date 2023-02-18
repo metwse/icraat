@@ -1,5 +1,5 @@
 const url = {
-	backend: 'http://icraat.metw/api'
+	backend: '/api'
 }
 
 

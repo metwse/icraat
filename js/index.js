@@ -1,8 +1,8 @@
 ﻿const d = document
-const session = new icraat.Session()
+const session = eval('new icraat.Session()')
 var r = root = d.getElementById('root')
 
-AsyncFunction = Object.getPrototypeOf(async () => { }).constructor
+const AsyncFunction = Object.getPrototypeOf(async () => { }).constructor
 
 async function load(fn) {
     load._.style.display = 'block', mouse.disable()
@@ -90,6 +90,7 @@ const app = {
         this.location.format()
         switch (this.location.pathname[0]) {
             case '': return await this.template.render('homepage')
+            case 'sınavlar': return await this.template.render('exams')
             case 'sonuç': return await this.template.render('result')
             case 'analiz': return await this.template.render('analyze')
             default: return await this.template.render('404')

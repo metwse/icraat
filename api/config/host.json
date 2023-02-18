@@ -1,5 +1,5 @@
 {
-  "frontend": "http://icraat.metw",
+  "frontend": "http://icraat",
   "base": "/api",
   "name": "icraat",
   "port": 810

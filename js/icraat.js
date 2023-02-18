@@ -31,7 +31,7 @@ class IcraatError extends Error {
         var message
         if (this.ready) message = this.msg
         else {
-            message = metw.Error.ERRORS[this.code][0]
+            message = IcraatError.ERRORS[this.code][0]
             if (this.msg?.forEach) this.msg.forEach((m, i) => message = message.replace(`$${i + 1}`, m))
         }
         return `Error: ${message} [${this.code}]` + (this.details ? `\n${JSON.stringify(this.details)}` : '')
@@ -125,22 +125,23 @@ class Session {
         return query
     }
     
-    async dashboard() {
-        var [data] = await this.request('/dashboard')
-        return (await this.bulkGet(data)).exams
-    }
-
-    async dashboardFilters() {
-        var [data] = await this.request('/dashboard/filters')
-        data = await this.bulkGet(data)
-        return { publishers: data.publishers, 'exams.categories': data['exams.categories'] }
-    }
-
-    async search(param, text, opt) {
-        const mapped = Session.PLURAL_MAPPINGS[param] ?? param
-        var [data, ok] = await this.request(`/${mapped.replace(/\./, '/')}/search?q=${text}&filter=${opt?.filter}`)
-        if (!ok) throw IcraatError(data)
-        return (await this.bulkGet({ [mapped]: data }))[mapped]
+    exams = {
+        session: this,
+        async dashboard() {
+            var [data] = await this.session.request('/dashboard/exams')
+            return (await this.session.bulkGet(data)).exams
+        },
+        async dashboardFilters() {
+            var [data] = await this.session.request('/dashboard/exams/filters')
+            data = await this.session.bulkGet(data)
+            return { publishers: data.publishers, 'exams.categories': data['exams.categories'] }
+        },
+        async search(param, text, opt) {
+            const mapped = Session.PLURAL_MAPPINGS[param] ?? param
+            var [data, ok] = await this.session.request(`/${mapped.replace(/\./, '/')}/search?q=${text}&filter=${opt?.filter}`)
+            if (!ok) throw IcraatError(data)
+            return (await this.session.bulkGet({ [mapped]: data }))[mapped]
+        }
     }
 }
 

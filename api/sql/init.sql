@@ -1,3 +1,7 @@
+CREATE EXTENSION pg_trgm;
+
+
+
 -- DROP SCHEMA IF EXISTS exams;
 CREATE SCHEMA IF NOT EXISTS exams AUTHORIZATION postgres;
 -- DROP SCHEMA IF EXISTS lessons;
@@ -58,7 +62,18 @@ CREATE INDEX IF NOT EXISTS books_publisher_id
     ON public.books USING btree
     (publisher_id ASC NULLS LAST)
     TABLESPACE pg_default;
+    
+    
 
+-- DROP TABLE IF EXISTS exams.categories;
+CREATE TABLE IF NOT EXISTS exams.categories (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name text COLLATE pg_catalog."default" NOT NULL,
+    question_count integer NOT NULL,
+    schema integer[] NOT NULL,
+    CONSTRAINT categories_pkey PRIMARY KEY (id)
+) TABLESPACE pg_default;
+ALTER TABLE IF EXISTS exams.categories OWNER to postgres;
 
 
 -- DROP TABLE IF EXISTS public.exams;
@@ -101,18 +116,7 @@ CREATE INDEX IF NOT EXISTS exams_publisher_id
     ON public.exams USING btree
     (publisher_id ASC NULLS LAST)
     TABLESPACE pg_default;
-    
 
-
--- DROP TABLE IF EXISTS exams.categories;
-CREATE TABLE IF NOT EXISTS exams.categories (
-    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    name text COLLATE pg_catalog."default" NOT NULL,
-    question_count integer NOT NULL,
-    schema integer[] NOT NULL,
-    CONSTRAINT categories_pkey PRIMARY KEY (id)
-) TABLESPACE pg_default;
-ALTER TABLE IF EXISTS exams.categories OWNER to postgres;
 
 
 -- DROP TABLE IF EXISTS public.questions;

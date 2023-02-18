@@ -85,7 +85,7 @@
                 ['Boş', stat.blank]
             ]
 
-            chart.draw(new google.visualization.arrayToDataTable(data), { ...options, title: r.data.category.schema[index][0].name, pieStartAngle: Math.random() * 360 })
+			chart.draw(new google.visualization.arrayToDataTable(data), { ...options, title: `${r.data.category.schema[index][0].name} [%${100 * stat.net / stat.total} - ${stat.net}]`, pieStartAngle: Math.random() * 360 })
         })
     })
 </script>

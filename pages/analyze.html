@@ -14,6 +14,8 @@
     <li><icraat-loading class="initial"></icraat-loading></li>
     <li><icraat-loading class="initial"></icraat-loading></li>
     <li><icraat-loading class="initial"></icraat-loading></li>
+    <li><icraat-loading class="initial"></icraat-loading></li>
+    <li><icraat-loading class="initial"></icraat-loading></li>
 </ul>
 
 <style>
@@ -58,33 +60,43 @@
 
         var data = [
             [
-                'netler',
+		{ title: 'Netler', colors: ['#EF7424'] },
                 [['Deneme Sınavı', 'Net']]
             ],
             [
-                'yanlış ve boşlar',
-                [['Deneme Sınavı', 'Yanlış', 'Boş']],
-                'SteppedAreaChart'
+		{ title: 'Başarı Yüzdesi', type: 'AreaChart', colors: ['#5A6C90'] },
+                [['Deneme Sınavı', '%']]
             ],
             [
-                'çözme süresi',
-                [['Deneme Sınavı', 'Dakika']],
-                'BarChart'
+		{ title: 'Yanlış ve Boşlar', type: 'BarChart', colors: ['#E53F55', '#16A3B5'] },
+                [['Deneme Sınavı', 'Yanlış', 'Boş']]
+            ],
+            [
+	        { title: 'Çözme Süresi', type: 'ColumnChart', colors: ['#2D54D3'] },
+                [['Deneme sınavı', 'Dakika']]
+            ],
+            [
+	        { title: 'Soru Başına Çözme Süresi', colors: ['#2D54D3'] },
+                [['Deneme sınavı', 'Dakika']]
             ]
+
         ]
 
         r.data.forEach(exam => {
             data[0][1].push([`${exam.shortName}`, exam.net])
-            data[1][1].push([`${exam.shortName}`, exam.totalWrong, exam.totalBlank])
-            data[2][1].push([`${exam.shortName}`, +exam.duration])
+            data[1][1].push([`${exam.shortName}`, exam.net * 100 / exam.category.questionCount])
+            data[2][1].push([`${exam.shortName}`, exam.totalWrong, exam.totalBlank])
+            data[3][1].push([`${exam.shortName}`, +exam.duration])
+            data[4][1].push([`${exam.shortName}`, +exam.durationPerQuestion])
         })
 
 
         const elements = r.querySelectorAll('.charts li')
 
         elements.forEach((element, index) => {
-            let chart = new google.visualization[data[index][2] ?? 'LineChart'](element)
-            chart.draw(new google.visualization.arrayToDataTable(data[index][1]), { ...options, title: data[index][0].toUpperCase() })
+            let chart = new google.visualization[data[index][0].type ?? 'LineChart'](element)
+	    delete data[index][0].type
+            chart.draw(new google.visualization.arrayToDataTable(data[index][1]), { ...options, ...data[index][0] })
         })
     })
 </script>

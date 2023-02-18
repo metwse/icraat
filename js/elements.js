@@ -94,11 +94,11 @@ class IcraatExams extends HTMLElement {
 
 
     async search(query, filter) {
-        this.innerHTML = '', this.classList.add('loading')
+        this.innerHTML = '<icraat-loading></icraat-loading>', this.classList.add('loading')
         const random = Math.random()
         this.random.search = random
         const data = await eval('session').dashboard.examsSearch('exams', query, { filter: `${filter['publishers'].map(v => v.id)};${filter['exams.categories'].map(v => v.id)}` })
-        if (this.random.search == random) this.concat(data), this.classList.remove('loading')
+        if (this.random.search == random) this.innerHTML = '', this.concat(data), this.classList.remove('loading')
     }
 }
 

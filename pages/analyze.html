@@ -39,8 +39,7 @@
     exams.schema = '<span class="publisher">{data.publisher.name}</span>: <span class="category">{data.category.name}</span> <span class="name">{data.name}</span>'
     exams.concat(r.data)
 
-    google.charts.load('current', { 'packages': ['corechart'] })
-    google.charts.setOnLoadCallback(() => {
+    var drawCharts = () => {
         const options = {
             backgroundColor: '#313131',
             chartArea: { backgroundColor: '#414141', titleTextStyle: { color: 'white' } },
@@ -54,26 +53,25 @@
 
         var data = [
             [
-		{ title: 'Netler', colors: ['#EF7424'] },
+                { title: 'Netler', colors: ['#EF7424'] },
                 [['Deneme Sınavı', 'Net']]
             ],
             [
-		{ title: 'Başarı Yüzdesi', type: 'AreaChart', colors: ['#5A6C90'] },
+                { title: 'Başarı Yüzdesi', type: 'AreaChart', colors: ['#5A6C90'] },
                 [['Deneme Sınavı', '%']]
             ],
             [
-		{ title: 'Yanlış ve Boşlar', type: 'BarChart', colors: ['#E53F55', '#16A3B5'] },
+                { title: 'Yanlış ve Boşlar', type: 'BarChart', colors: ['#E53F55', '#16A3B5'] },
                 [['Deneme Sınavı', 'Yanlış', 'Boş']]
             ],
             [
-	        { title: 'Çözme Süresi', type: 'ColumnChart', colors: ['#2D54D3'] },
+                { title: 'Çözme Süresi', type: 'ColumnChart', colors: ['#2D54D3'] },
                 [['Deneme sınavı', 'Dakika']]
             ],
             [
-	        { title: 'Soru Başına Çözme Süresi', colors: ['#2D54D3'] },
+                { title: 'Soru Başına Çözme Süresi', colors: ['#2D54D3'] },
                 [['Deneme sınavı', 'Saniye']]
             ]
-
         ]
 
         r.data.forEach(exam => {
@@ -92,5 +90,8 @@
 	    delete data[index][0].type
             chart.draw(new google.visualization.arrayToDataTable(data[index][1]), { ...options, ...data[index][0] })
         })
-    })
+    }
+
+    if (google.visualization) drawCharts()
+    else google.load('visualization', '1.1', { packages: ['corechart'] }), google.setonloadcallback(drawCharts)
 </script>

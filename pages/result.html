@@ -61,8 +61,8 @@
         lessons.appendChild(element)
     })
 
-    google.load('visualization', '1', { packages: ['corechart'] });
-    google.setOnLoadCallback(() => {
+
+    var drawCharts = () => {
         const options = {
             backgroundColor: '#414141',
             legend: { position: 'labeled', textStyle: { color: 'white' } },
@@ -87,5 +87,8 @@
 
             chart.draw(new google.visualization.arrayToDataTable(data), { ...options, title: `${r.data.category.schema[index][0].name} [%${(100 * stat.net / stat.total).toFixed(2)} - ${stat.net}]`, pieStartAngle: Math.random() * 360 })
         })
-    })
+    }
+
+    if (google.visualization) drawCharts()
+    else google.load('visualization', '1.1', { packages: ['corechart'] }), google.setOnLoadCallback(drawCharts)
 </script>

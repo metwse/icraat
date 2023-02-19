@@ -25,7 +25,7 @@
                         </div>
                     </button>
                 </div>
-                <i-fancylist clicktoremove nowrap></i-fancylist>
+                <i-fancylist i-clicktoremove i-nowrap></i-fancylist>
             </div>
             <div class="analyze">
                 <div>
@@ -71,7 +71,7 @@
                         </button>
                     </div>
                 </div>
-                <i-fancylist clicktoremove></i-fancylist>
+                <i-fancylist i-clicktoremove></i-fancylist>
             </div>
         </div>
 
@@ -84,23 +84,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </nav>
-            <section class="publishers">
-                <div class="title">
-                    <h4>yayınevi</h4>
-                    <input placeholder="Ara" />
-                </div>
-                <i-loading></i-loading>
-                <ul></ul>
-            </section>
-            <hr />
-            <section class="categories">
-                <div class="title">
-                    <h4>kategori</h4>
-                    <input placeholder="Ara" />
-                </div>
-                <i-loading></i-loading>
-                <ul></ul>
-            </section>
+            <i-search class="publishers" i-type="checkbox" i-title="yayınevi" i-searchfunction="async query => session.search('publishers', query)"></i-search>
+            <i-search class="exams categories" i-type="checkbox" i-title="categori" i-searchfunction="async query => session.search('category', query)"></i-search>
         </div>
     </div>
 </div>
@@ -118,7 +103,7 @@
     .r .main h2 { margin: 0; color: var(--color-3); font-size: 2em }
     .r .main .content { position: relative; flex-grow: 1 }
     
-    /* ** ** ** ** */
+    /*{{{ CONTENT */
     
     .r .content .buttons i-fancylist { margin: .25em 0 0; padding: 0 }
     .r .content .buttons > * { margin-top: .5em }
@@ -133,11 +118,11 @@
     .r .content .analyze i-fancylist div .publisher { text-transform: uppercase }
     .r .content .analyze i-fancylist div .name { text-decoration: underline var(--t-1) }
 
-    
     .r.analyze .content .analyze button .start { display: none }
     .r.analyze .content .analyze button .stop { display: inline-flex !important }
     .r.analyze .content .analyze .analyze { display: block !important }
 
+    /*}}}*/
     /*{{{ SELECT FILTER */
 
     .r .content .select-filter { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: var(--bg-2); z-index: 99 }
@@ -148,17 +133,6 @@
     .r .content .select-filter nav svg:hover { filter: brightness(1.1); cursor: pointer }
     
     .r .content .select-filter hr { margin: .5em 0 0; border: .125em solid var(--bg-3); border-bottom: 0 }
-
-    .r .content .select-filter section .title { display: flex; padding: 1em 1em .5em; justify-content: space-between; align-items: center; gap: 2em }
-    .r .content .select-filter section .title h4 { display: inline-block; margin: 0; text-transform: uppercase; font-weight: 500; font-size: .9em }
-    .r .content .select-filter section .title input { border: none; border-bottom: .06125em solid var(--bg-3); flex-grow: 1 }
-    .r .content .select-filter section ul { margin: 0; padding: 0 0 }
-    .r .content .select-filter section  li { display: flex; padding: .5em 2em; background: var(--bg-2); transition: filter .1s; align-items: center; gap: .5em; list-style-type: none }
-    .r .content .select-filter section  li:hover { filter: brightness(1.1); cursor: pointer }
-    .r .content .select-filter section  li:before { content: ''; display: grid; width: 1em; height: 1em; background: var(--color); border-radius: .25em; place-items: center }
-    .r .content .select-filter section  li.active:before { background: var(--t-1) }
-    .r .content .select-filter section i-loading { display: none }
-    .r .content .select-filter section.loading i-loading { display: block }
 
     /*}}}*/
 </style>
@@ -186,52 +160,19 @@
     filter.active = { 'publishers': [], 'exams.categories': [] }
 
 
-    var selectFilter = r.querySelector('.select-filter')
-    selectFilter.random = {}
-    selectFilter.filters = ['publishers', 'exams.categories']
-    selectFilter.close = selectFilter.querySelector('.close')
-    for (let type of selectFilter.filters) {
-        let self = selectFilter.querySelector('.' + type.split('.').at(-1))
-        selectFilter[type] = self
-        self.random = {}
-        self.ul = self.querySelector('ul')
-        self.add = items => {
-            for (let item of items) {
-                let element = d.createElement('li')
-                element.onclick = () => {
-                    if (element.classList.contains('active')) element.classList.remove('active'), filter.active[type].splice(filter.active[type].indexOf(item), 1)
-                    else element.classList.add('active'), filter.active[type].push(item)
-                }
-                if (filter.active[type].includes(item)) element.classList.add('active')
-                element.innerText = item.name
-                self.ul.appendChild(element)
-            }
-        }
-        self.search = async query => {
-            self.classList.add('loading')
-            self.ul.innerHTML = ''
-            const random = Math.random()
-            self.random.search = random
-            var data = await session.dashboard.examsSearch(type, query)
-            if (self.random.search = random) {
-                self.classList.remove('loading')
-                self.add(data)
-            }
-        }
-        self.search.bar = self.querySelector('input')
-        self.search.bar.oninput = () => {
-            clearTimeout(self.search.timeout)
-            self.search.timeout = setTimeout(() => self.search(self.search.bar.value), 300)
-        }
-    }
-    selectFilter.load = filters => {
+    filter.select = r.querySelector('.select-filter')
+    filter.select.random = {}, filter.select.search = {}
+    filter.select.close = filter.select.querySelector('.close')
+
+    for (let type of Object.keys(filter.active)) filter.select.search[type] = filter.select.querySelector(`.${type}`), filter.select.search[type].list = filter.active[type]
+    filter.select.load = filters => {
         for (let key of Object.keys(filters)) {
-            selectFilter[key].add(filters[key])
-            selectFilter[key].classList.remove('loading')
+            filter.select.search[key].concat(filters[key])
+            filter.select.search[key].loading = false
         }
     }
-    selectFilter.close.onclick = async () => {
-        selectFilter.style.display = 'none'
+    filter.select.close.onclick = async () => {
+        filter.select.style.display = 'none'
         filter.ul.clear()
         filter.ul.concat2d(Object.values(filter.active))
         app.history.onpopstate = null
@@ -241,18 +182,18 @@
 
 
     filter.querySelector('button').onclick = async () => {
-        selectFilter.style.display = 'block'
-        for (let filter of selectFilter.filters) {
-            selectFilter[filter].classList.add('loading')
-            selectFilter[filter].ul.innerHTML = ''
+        filter.select.style.display = 'block'
+        for (let key of Object.keys(filter.active)) {
+            filter.select.search[key].loading = true
+            filter.select.search[key].ul.innerHTML = ''
         }
-        app.history.onpopstate = selectFilter.close.onclick
+        app.history.onpopstate = filter.select.close.onclick
         history.pushState(null, null)
 
         const random = Math.random()
-        selectFilter.random.load = random
+        filter.select.random.load = random
         filters = await session.dashboard.examsFilters()
-        if (selectFilter.random.load == random) selectFilter.load(filters)
+        if (filter.select.random.load == random) filter.select.load(filters)
     }
     //}}}
 

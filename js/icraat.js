@@ -142,13 +142,14 @@ class Session {
             var [data] = await this.session.request('/dashboard/exams/filters')
             data = await this.session.bulkGet(data)
             return { publishers: data.publishers, 'exams.categories': data['exams.categories'] }
-        },
-        async examsSearch(param, text, opt) {
-            const mapped = Session.PLURAL_MAPPINGS[param] ?? param
-            var [data, ok] = await this.session.request(`/${mapped.replace(/\./, '/')}/search?q=${text}&filter=${opt?.filter}`)
-            if (!ok) throw IcraatError(data)
-            return (await this.session.bulkGet({ [mapped]: data }))[mapped]
         }
+    }
+
+    async search(param, text, opt) {
+        const mapped = Session.PLURAL_MAPPINGS[param] ?? param
+        var [data, ok] = await this.request(`/${mapped.replace(/\./, '/')}/search?q=${text}&${opt?.filter ? 'filter=' : ''}${opt?.filter}`)
+        if (!ok) throw IcraatError(data)
+        return (await this.bulkGet({ [mapped]: data }))[mapped]
     }
 }
 

@@ -107,7 +107,7 @@ class IcraatExams extends HTMLElement {
                 this.innerHTML = '<i-loading></i-loading>', this.classList.add('loading')
                 random = Math.random()
                 this.random.search = random
-                const data = await eval('session').dashboard.examsSearch('exams', query ?? '', { filter: `${filter?.['publishers'].map(v => v.id) ?? ''};${filter?.['exams.categories'].map(v => v.id) ?? ''}` })
+                const data = await eval('session').search('exams', query ?? '', { filter: `${filter?.['publishers'].map(v => v.id) ?? ''};${filter?.['exams.categories'].map(v => v.id) ?? ''}` })
                 if (this.random.search == random) this.innerHTML = '', this.concat(data), this.classList.remove('loading')
                 res(true)
             }, timeout)
@@ -126,7 +126,7 @@ class IcraatFancyList extends HTMLElement {
         super()
         this._schema = []
         this._list = []
-        this.clickToRemove = this.getAttribute('clicktoremove') !== null 
+        this.clickToRemove = this.getAttribute('i-clicktoremove') !== null 
         this.onremove = null
     }
 
@@ -172,3 +172,65 @@ class IcraatFancyList extends HTMLElement {
 }
 customElements.define('i-fancylist', IcraatFancyList)
 //}}}
+
+
+
+//{{{ IcraatSearch
+class IcraatSearch extends HTMLElement {
+    constructor() {
+        super()
+        switch (this.type) {
+            case 'checkbox':
+                this.innerHTML = `
+                    <div class="title">
+                        <h4></h4>
+                        <input placeholder="Ara" />
+                    </div>
+                    <i-loading></i-loading>
+                    <ul></ul>`
+                this.querySelector('h4').innerText = this.title
+                
+                this.list = [], this.random = {}
+                this.ul = this.querySelector('ul')
+                this.concat = items => {
+                    for (let item of items) {
+                        let element = d.createElement('li')
+                        element.onclick = () => {
+                            if (element.classList.contains('active')) this.list.remove(item)
+                            else this.list.push(item)
+                            element.classList.toggle('active')
+                        }
+                        if (this.list.includes(item)) element.classList.add('active')
+                        element.innerText = item.name
+                        this.ul.appendChild(element)
+                    }
+                }
+                this.search = async query => {
+                    this.loading = true
+                    this.ul.innerHTML = ''
+                    const random = Math.random()
+                    this.random.search = random
+                    var data = await eval(this.searchfunction)(query)
+                    if (this.random.search == random) this.classList.remove('loading'), this.concat(data)
+                }
+                this.querySelector('input').oninput = ({ target: { value } }) => {
+                    clearTimeout(this.search.timeout)
+                    this.search.timeout = setTimeout(() => this.search(value), 300)
+                }
+                break
+            default: this.innerHTML = 'invalid type'
+        }
+    }
+    get type() { return this.getAttribute('i-type') }
+    get title() { return this.getAttribute('i-title') }
+    get searchfunction() { return this.getAttribute('i-searchfunction') }
+
+    set loading(v) { 
+        if (v) this.classList.add('loading')
+        else this.classList.remove('loading')
+    }
+
+    async load(opt) {
+    }
+}
+customElements.define('i-search', IcraatSearch)

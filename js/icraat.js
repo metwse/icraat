@@ -1,6 +1,6 @@
 const url = { backend: '/api' }
 
-const minuteIntegerToString = duration => {
+window.minuteIntegerToString = duration => {
     let _duration = (duration + '').split('.')
     if (!_duration[1]) _duration[1] = '00'
     _duration[1] = (_duration[1] * 3/5 / 10 ** (_duration[1].length - 2) + '').split('.')[0]
@@ -202,7 +202,7 @@ class Exam {
         this.stats = nets.map(lesson => lesson.map(net => parseFloat(net))).map(([net, total, wrong, blank]) => { return { net, total, wrong, blank, true: total - wrong - blank } })
 
         this.duration = minuteIntegerToString(duration)
-	this._duration = duration
+        this._duration = +duration
 
         this.timestamp = new Date(timestamp)
         if (publisher) this.publisher = publisher

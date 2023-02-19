@@ -26,7 +26,7 @@
     .r .exams  li .name { text-decoration: underline var(--t-1) }
 
     .r .charts { display: flex; margin: 0; padding: 0; flex-direction: column; gap: 1em }
-    .r .charts li { height: 20em; list-style-type: none }
+    .r .charts li { height: 24em; list-style-type: none }
     .r .charts li:has(i-loading) { display: grid; border: .06125em solid var(--bg-3); place-items: center; border-radius: .5em }
 
     i-fancylist { padding: 1em 2em }
@@ -44,9 +44,9 @@
             backgroundColor: '#313131',
             chartArea: { backgroundColor: '#414141', titleTextStyle: { color: 'white' } },
             vAxis: { gridlines: { color: '#787878' }, textStyle: { color: 'white', opacity: .5 } },
-            hAxis: { textStyle: { color: 'white', opacity: .5 }, slantedText: true, slantedTextAngle: 45 },
+            hAxis: { gridlines: { color: '#787878' }, textStyle: { color: 'white', opacity: .5 }, slantedText: true, slantedTextAngle: 45 },
             titleTextStyle: { color: 'white' },
-            legend: { textStyle: { color: 'white', opacity: .75 } }
+            legend: { position: 'top', textStyle: { color: 'white', opacity: .75 } }
         }
 
         r.querySelector('i-loading.initial').remove()
@@ -54,34 +54,46 @@
         var data = [
             [
                 { title: 'Netler', colors: ['#EF7424'] },
-                [['Deneme Sınavı', 'Net']]
+                [['Deneme Sınavı', 'Net', 'Ortalama']]
             ],
             [
-                { title: 'Başarı Yüzdesi', type: 'AreaChart', colors: ['#5A6C90'] },
-                [['Deneme Sınavı', '%']]
+                { title: 'Başarı Yüzdesi', type: 'ComboChart', colors: ['#5A6C90'], series: { 0: { type: 'area' } } },
+                [['Deneme Sınavı', '%', 'Ortalama']]
             ],
             [
-                { title: 'Yanlış ve Boşlar', type: 'BarChart', colors: ['#E53F55', '#16A3B5'] },
+                { title: 'Yanlış ve Boşlar', type: 'LineChart', colors: ['#E53F55', '#16A3B5'], orientation: 'vertical' },
                 [['Deneme Sınavı', 'Yanlış', 'Boş']]
             ],
             [
-                { title: 'Çözme Süresi', type: 'ColumnChart', colors: ['#2D54D3'] },
-                [['Deneme sınavı', 'Dakika']]
+                { title: 'Çözme Süresi', type: 'ComboChart', colors: ['#2D54D3'], seriesType: 'bars', series: { 1: { type: 'area' } } },
+                [['Deneme sınavı', 'Dakika', 'Ortalama']]
             ],
             [
                 { title: 'Soru Başına Çözme Süresi', colors: ['#2D54D3'] },
-                [['Deneme sınavı', 'Saniye']]
+                [['Deneme sınavı', 'Saniye', 'Ortalama']]
             ]
         ]
 
+        var avg = new Array(data.length).fill(0), length = 0
         r.data.forEach(exam => {
+            length++
+            avg[0] += exam.net
             data[0][1].push([`${exam.shortName}`, exam.net])
+            avg[1] += exam.net * 100 / exam.questionCount
             data[1][1].push([`${exam.shortName}`, exam.net * 100 / exam.questionCount])
             data[2][1].push([`${exam.shortName}`, exam.totalWrong, exam.totalBlank])
+            avg[3] += exam._duration 
             data[3][1].push([`${exam.shortName}`, +exam.duration])
+            avg[4] += +exam.durationPerQuestion
             data[4][1].push([`${exam.shortName}`, +exam.durationPerQuestion])
         })
-
+        avg = avg.map((v) => v / length)
+        avg[3] = +minuteIntegerToString(avg[3])
+        for (let i = 1; i <= r.data.length; i++) {
+            data.forEach(([_, list], index) => {
+                if (list[0].length != list[i].length) list[i].push(avg[index])
+            })
+        }
 
         const elements = r.querySelectorAll('.charts li')
 

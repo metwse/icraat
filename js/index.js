@@ -35,6 +35,9 @@ Array.prototype.remove = function (value) {
     while (i != -1) this.splice(i, 1), i = isFn ? this.findIndex(value) : this.indexOf(value), (r++)
     return r
 }
+Array.prototype.average = function () {
+    return this.reduce((a, b) => a + b) / this.length 
+}
 
 const mouse = {
     _state: true,

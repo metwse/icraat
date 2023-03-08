@@ -173,6 +173,7 @@
     }
     filter.select.close.onclick = async () => {
         filter.select.style.display = 'none'
+        exams.style.display = 'unset'
         filter.ul.clear()
         filter.ul.concat2d(Object.values(filter.active))
         app.history.onpopstate = null
@@ -183,6 +184,7 @@
 
     filter.querySelector('button').onclick = async () => {
         filter.select.style.display = 'block'
+        exams.style.display = 'none'
         for (let key of Object.keys(filter.active)) {
             filter.select.search[key].loading = true
             filter.select.search[key].ul.innerHTML = ''

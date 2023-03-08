@@ -106,7 +106,7 @@ const app = {
     },
     back() {
         if (this.location.pathname[0] && !this.history.length) this.template.render('homepage'), history.replaceState(null, null, '/'), this.location.format()
-	else history.back()
+        else history.back()
     }
 }
 

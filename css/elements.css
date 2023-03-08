@@ -17,7 +17,7 @@ i-exams.loading i-loading { display: block }
 
 
 i-fancylist { display: flex; flex-wrap: wrap; gap: .25em }
-i-fancylist > div { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em }
+i-fancylist > div { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em; white-space: nowrap }
 i-fancylist[i-clicktoremove] > div:hover { cursor: pointer } 
 i-fancylist[i-nowrap] { flex-wrap: nowrap; overflow-x: auto }
 i-fancylist hr { display: inline-block; width: 1px; height: 2em; margin: 0; background: var(--bg-3); border: none }

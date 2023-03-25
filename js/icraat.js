@@ -221,7 +221,7 @@ class Exam {
     }
 
     get fullName() { return `${this.publisher.name} ${this.category.name} - ${this.name}` }
-    get shortName() { return `${this.publisher.name.match(/([A-Z0-9]+)/g).join('')}: ${(this.category.name.match(/([A-Z0-9ÖÇŞİĞÜ]+)/g) || ['?']).join('')}. ${this.name}` }
+    get shortName() { return `${(this.publisher.name.match(/([A-Z0-9ÖÇŞİĞÜ]+)/g) || ['']).join('')}: ${(this.category.name.match(/([A-Z0-9ÖÇŞİĞÜ]+)/g) || ['?']).join('')}. ${this.name}` }
     get totalTrue() { return this.stats.map(v => v.true).reduce((a, b) => a + b) }
     get totalWrong() { return this.stats.map(v => v.wrong).reduce((a, b) => a + b) }
     get totalBlank() { return this.stats.map(v => v.blank).reduce((a, b) => a + b) }

@@ -1,6 +1,6 @@
 const url = { backend: '/api' }
 
-const minuteIntegerToString = duration => {
+const minuteIntegerToString = window.minuteIntegerToString = duration => {
     let _duration = (duration + '').split('.')
     if (!_duration[1]) _duration[1] = '00'
     _duration[1] = (_duration[1] * 3/5 / 10 ** (_duration[1].length - 2) + '').split('.')[0]

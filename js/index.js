@@ -1,5 +1,6 @@
 ﻿const d = document
 const session = eval('new icraat.Session()')
+session.token = localStorage.getItem('token')
 var r = root = d.getElementById('root')
 
 const AsyncFunction = Object.getPrototypeOf(async () => { }).constructor
@@ -101,6 +102,8 @@ const app = {
             case 'sınavlar-eski': return await this.template.render('exams-old')
             case 'sonuç': return await this.template.render('result')
             case 'analiz': return await this.template.render('analyze')
+            case 'yeni': return await this.template.render('new')
+            case 'giriş': return await this.template.render('login')
             default: return await this.template.render('404')
         }
     },

@@ -4,11 +4,14 @@
 
 
 <div class="top">
-    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+    <svg onclick="open('https://www.metw.cc', target='blank_')" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
         <path fill="currentColor" d="M275,66.56V255.1c0,.85-.96,1.28-1.6,.85l-50.09-34.77c-.32-.11-.43-.43-.43-.85v-85.28c0-.43-.53-.64-.85-.32l-71.46,60.93c-.32,.32-.96,.32-1.28,0l-71.46-60.93c-.32-.32-.85-.11-.85,.32v85.18c0,.32-.11,.53-.43,.85l-49.98,34.77c-.74,.53-1.6,0-1.6-.85V66.56c0-.32,.11-.53,.32-.85l24.99-21.59c.32-.32,.96-.32,1.28,0l97.62,83.05c.32,.32,.96,.32,1.28,0L248.1,44.23c.32-.32,.96-.32,1.28,0l24.99,21.59c.53,.11,.64,.43,.64,.74h0Z"></path>
         <polygon fill="none" points="300 100 200 100 200 0 100 0 100 100 0 100 0 200 100 200 100 300 200 300 200 200 300 200"></polygon>
     </svg>
     <input placeholder="Ara" />
+    <svg onclick="app.redirect('/yeni')" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path>
+    </svg>
 </div>
 <div class="main">
     <h2>Sınavlar</h2>
@@ -85,56 +88,57 @@
                 </svg>
             </nav>
             <i-search class="publishers" i-type="checkbox" i-title="yayınevi" i-searchfunction="async query => session.search('publishers', query)"></i-search>
-            <i-search class="exams categories" i-type="checkbox" i-title="categori" i-searchfunction="async query => session.search('category', query)"></i-search>
+            <i-search class="exams categories" i-type="checkbox" i-title="kategori" i-searchfunction="async query => session.search('category', query)"></i-search>
         </div>
     </div>
 </div>
 
 <style>
-    .r { display: flex; flex-direction: column; gap: 2em }
+.r { display: flex; flex-direction: column; gap: 2em }
 
-    .r .top { display: flex; padding: .75em 1em; border: 0.125em solid var(--bg-3); border-left-color: var(--t-1); border-right-color: var(--t-1); border-radius: 100em; align-items: center; gap: 1em }
-    .r .top svg { height: 1.5em }    
-    .r .top input { border: none; background: none; outline: none; flex-grow: 1 }
+.r .top { display: flex; padding: .75em 1em; border: 0.125em solid var(--bg-3); border-left-color: var(--t-1); border-right-color: var(--t-1); border-radius: 100em; align-items: center; gap: 1em }
+.r .top svg { height: 1.5em }    
+.r .top svg:hover { cursor: pointer }    
+.r .top input { border: none; background: none; outline: none; flex-grow: 1 }
 
-    /* ** ** ** ** */
+/* ** ** ** ** */
 
-    .r .main { display: flex; flex-direction: column; flex-grow: 1 }
-    .r .main h2 { margin: 0; color: var(--color-3); font-size: 2em }
-    .r .main .content { position: relative; flex-grow: 1 }
-    
-    /*{{{ CONTENT */
-    
-    .r .content .buttons i-fancylist { margin: .25em 0 0; padding: 0 }
-    .r .content .buttons > * { margin-top: .5em }
-    .r .content .buttons > div > div:first-of-type { display: flex; justify-content: space-between; gap: .25em; flex-wrap: wrap }
-    .r .content .buttons > div > div:first-of-type > div { display: flex; gap: .25em; flex-wrap: wrap }
-    .r .content .buttons button { padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); text-transform: uppercase; border-radius: 100em }
-    .r .content .buttons button svg { height: 1.25em }
-    .r .content .buttons button div { gap: .5em }
-    
-    .r .content .analyze:has(i-fancylist:not(:empty)) button.selected { display: inline-flex !important }
-    .r .content .analyze i-fancylist:empty { display: none }
-    .r .content .analyze i-fancylist div .publisher { text-transform: uppercase }
-    .r .content .analyze i-fancylist div .name { text-decoration: underline var(--t-1) }
+.r .main { display: flex; flex-direction: column; flex-grow: 1 }
+.r .main h2 { margin: 0; color: var(--color-3); font-size: 2em }
+.r .main .content { position: relative; flex-grow: 1 }
 
-    .r.analyze .content .analyze button .start { display: none }
-    .r.analyze .content .analyze button .stop { display: inline-flex !important }
-    .r.analyze .content .analyze .analyze { display: block !important }
+/*{{{ CONTENT */
 
-    /*}}}*/
-    /*{{{ SELECT FILTER */
+.r .content .buttons i-fancylist { margin: .25em 0 0; padding: 0 }
+.r .content .buttons > * { margin-top: .5em }
+.r .content .buttons > div > div:first-of-type { display: flex; justify-content: space-between; gap: .25em; flex-wrap: wrap }
+.r .content .buttons > div > div:first-of-type > div { display: flex; gap: .25em; flex-wrap: wrap }
+.r .content .buttons button { padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); text-transform: uppercase; border-radius: 100em }
+.r .content .buttons button svg { height: 1.25em }
+.r .content .buttons button div { gap: .5em }
 
-    .r .content .select-filter { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: var(--bg-2); z-index: 99 }
-    
-    .r .content .select-filter nav { display: flex; padding: 1em 1em; border: .125em solid var(--bg-3); border-left: none; border-right: none; justify-content: space-between; align-items: center }
-    .r .content .select-filter nav h3 { margin: 0; text-transform: uppercase; font-weight: 500 }
-    .r .content .select-filter nav svg { padding: .2em; height: 1.6em; background: var(--bg-2); border-radius: 100%; transition: filter .1s }
-    .r .content .select-filter nav svg:hover { filter: brightness(1.1); cursor: pointer }
-    
-    .r .content .select-filter hr { margin: .5em 0 0; border: .125em solid var(--bg-3); border-bottom: 0 }
+.r .content .analyze:has(i-fancylist:not(:empty)) button.selected { display: inline-flex !important }
+.r .content .analyze i-fancylist:empty { display: none }
+.r .content .analyze i-fancylist div .publisher { text-transform: uppercase }
+.r .content .analyze i-fancylist div .name { text-decoration: underline var(--t-1) }
 
-    /*}}}*/
+.r.analyze .content .analyze button .start { display: none }
+.r.analyze .content .analyze button .stop { display: inline-flex !important }
+.r.analyze .content .analyze .analyze { display: block !important }
+
+/*}}}*/
+/*{{{ SELECT FILTER */
+
+.r .content .select-filter { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: var(--bg-2); z-index: 99 }
+
+.r .content .select-filter nav { display: flex; padding: 1em 1em; border: .125em solid var(--bg-3); border-left: none; border-right: none; justify-content: space-between; align-items: center }
+.r .content .select-filter nav h3 { margin: 0; text-transform: uppercase; font-weight: 500 }
+.r .content .select-filter nav svg { padding: .2em; height: 1.6em; background: var(--bg-2); border-radius: 100%; transition: filter .1s }
+.r .content .select-filter nav svg:hover { filter: brightness(1.1); cursor: pointer }
+
+.r .content .select-filter hr { margin: .5em 0 0; border: .125em solid var(--bg-3); border-bottom: 0 }
+
+/*}}}*/
 </style>
 
 <script>

@@ -59,7 +59,8 @@ class Session {
                     body: opt?.json ? JSON.stringify(opt.json) : opt?.body,
                     headers: Object.assign(opt?.headers || {}, {
                         ...(this.token ? { 'Auth': this.token } : {}),
-                        ...(opt?.json ? { 'Content-Type': 'application/json' } : {})
+                        ...(opt?.json ? { 'Content-Type': 'application/json' } : {}),
+                        'token': this.token
                     }),
                     method: opt?.method || (opt?.json ? 'POST' : 'GET')
                 })).then(res => { raw = res, ok = res.ok; return res.json() })
@@ -142,6 +143,13 @@ class Session {
             var [data] = await this.session.request('/dashboard/exams/filters')
             data = await this.session.bulkGet(data)
             return { publishers: data.publishers, 'exams.categories': data['exams.categories'] }
+        }
+    }
+
+    new = {
+        session: this,
+        async exam(data) {
+            return await this.session.request('/exams/new', {  method: 'post', json: data })
         }
     }
 

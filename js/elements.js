@@ -179,7 +179,11 @@ customElements.define('i-fancylist', IcraatFancyList)
 class IcraatSearch extends HTMLElement {
     constructor() {
         super()
+        this.random = {}
+        this.classList.add(this.type)
+
         switch (this.type) {
+            // {{{ checkbox
             case 'checkbox':
                 this.innerHTML = `
                     <div class="title">
@@ -187,10 +191,10 @@ class IcraatSearch extends HTMLElement {
                         <input placeholder="Ara" />
                     </div>
                     <i-loading></i-loading>
-                    <ul></ul>`
+                    <ul class="checkbox-ul"></ul>`
                 this.querySelector('h4').innerText = this.title
                 
-                this.list = [], this.random = {}
+                this.list = []
                 this.ul = this.querySelector('ul')
                 this.concat = items => {
                     for (let item of items) {
@@ -218,6 +222,80 @@ class IcraatSearch extends HTMLElement {
                     this.search.timeout = setTimeout(() => this.search(value), 300)
                 }
                 break
+            // }}}
+            case 'single':
+                this.innerHTML = `
+                    <div class="title">
+                        <h4></h4>
+                        <span class="select">
+                            <span class="text">Seç</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="search">
+                        <div>
+                            <div>
+                                <input placeholder="Ara" />
+                                <svg class="close" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <ul class="checkbox-ul"><i-loading></i-loading></ul>
+                        </div>
+                    </div>`
+                this.value = null
+                this.selected = this.querySelector('.title .select .text')
+
+                this.querySelector('h4').innerText = this.title
+                this.search = this.querySelector('.search')
+                this.search.div = this.search.children[0]
+                
+                this.ul = this.querySelector('ul')
+                this.concat = items => {
+                    for (let item of items) {
+                        let element = d.createElement('li')
+                        if (this.value == item) element.classList.add('active')
+                        element.onclick = () => {
+                            for (let li of this.ul.children) li.classList.remove('active')
+                            element.classList.add('active'), this.value = item
+                            this.selected.innerText = item.name
+                            if (this.oninput) this.oninput(item)
+                            if (this.open) this.toggle()
+                        }
+                        element.innerText = item.name
+                        this.ul.appendChild(element)
+                    }
+                }
+                this.search.f = async query => {
+                    this.loading = true
+                    this.ul.innerHTML = '<i-loading></i-loading>'
+                    const random = Math.random()
+                    this.random.search = random
+                    var data = await eval(this.searchfunction)(query)
+                    this.ul.innerHTML = ''
+                    if (this.random.search == random) this.concat(data)
+                }
+                this.querySelector('input').oninput = ({ target: { value } }) => {
+                    clearTimeout(this.search.timeout)
+                    this.search.timeout = setTimeout(() => this.search.f(value), 300)
+                }
+
+                this.querySelector('.title .select').onclick = () => this.toggle()
+                this.toggle = async () => {
+                    if (this.open) setTimeout(() => this.search.style.display = 'none', 300), this.search.style.setProperty('--x', -this.search.div.offsetWidth + 'px')
+                    else { 
+                        for (let i of d.getElementsByTagName('i-search')) if (i.type == 'single' && i.open) i.toggle()
+                        this.search.style.display = 'block', requestAnimationFrame(() => this.search.style.setProperty('--x', '0'))
+                        this.search.f('') 
+                    }
+                    this.open = !this.open
+                }
+                this.querySelector('.close').onclick = () => { if (this.open) this.toggle() }
+                requestAnimationFrame(() => { this.open = true, this.toggle() })
+                break
+
             default: this.innerHTML = 'invalid type'
         }
     }

@@ -1,3 +1,4 @@
+/* {{{ i-exam i-exams */
 i-exam { display: flex; padding: 1em; margin: 1em 0; border: 1px solid var(--bg-3); border-radius: 1em }
 i-exam .general { flex-grow: 1 }
 i-exam  .details { display: flex; align-items: center; flex-wrap: wrap; column-gap: 1em }
@@ -14,8 +15,10 @@ i-exams.select i-exam .select { display: block }
 i-exams.select i-exam .view { display: none }
 i-exams i-loading { display: none }
 i-exams.loading i-loading { display: block }
+/* }}} */
 
 
+/* {{{ i-fancylist */
 i-fancylist { display: flex; flex-wrap: wrap; gap: .25em }
 i-fancylist > div { display: inline-block; padding: .5em 1em; background: var(--bg-2); color: var(--color-2); border: .1em solid var(--bg-3); font-size: .8em; border-radius: 100em; white-space: nowrap }
 i-fancylist[i-clicktoremove] > div:hover { cursor: pointer } 
@@ -23,18 +26,67 @@ i-fancylist[i-nowrap] { flex-wrap: nowrap; overflow-x: auto }
 i-fancylist hr { display: inline-block; width: 1px; height: 2em; margin: 0; background: var(--bg-3); border: none }
 i-fancylist::-webkit-scrollbar { height: 4px }
 i-fancylist::-webkit-scrollbar-thumb { border-width: 0 }
+/* }}} */
 
 
-i-search .title { display: flex; padding: 1em 1em .5em; justify-content: space-between; align-items: center; gap: 2em }
-i-search .title h4 { display: inline-block; margin: 0; text-transform: uppercase; font-weight: 500; font-size: .9em }
-i-search .title input { border: none; border-bottom: .06125em solid var(--bg-3); flex-grow: 1 }
-i-search ul { margin: 0; padding: 0 0 }
-i-search  li { display: flex; padding: .5em 2em; background: var(--bg-2); transition: filter .1s; align-items: center; gap: .5em; list-style-type: none }
-i-search  li:hover { filter: brightness(1.1); cursor: pointer }
-i-search  li:before { content: ''; display: grid; width: 1em; height: 1em; background: var(--color); border-radius: .25em; place-items: center }
-i-search  li.active:before { background: var(--t-1) }
-i-search i-loading { display: none }
-i-search.loading i-loading { display: block }
+/* {{{ i-search */
+i-search.checkbox .title { display: flex; padding: 1em 1em .5em; justify-content: space-between; align-items: center; gap: 2em }
+i-search.checkbox .title h4 { display: inline-block; margin: 0; text-transform: uppercase; font-weight: 500; font-size: .9em }
+i-search.checkbox .title input { flex-grow: 1 }
+i-search.checkbox i-loading { display: none }
+i-search.checkbox.loading i-loading { display: block }
+
+
+i-search .checkbox-ul { margin: 0; padding: 0 }
+i-search .checkbox-ul li { display: flex; padding: .5em 2em; background: var(--bg-2); transition: filter .1s; align-items: center; gap: .5em; list-style-type: none }
+i-search .checkbox-ul li:hover { filter: brightness(1.1); cursor: pointer }
+i-search .checkbox-ul li:before { content: ''; display: grid; width: 1em; height: 1em; background: var(--color); border-radius: .25em; place-items: center }
+i-search .checkbox-ul li.active:before { background: var(--t-1) }
+
+i-search.single .title { 
+    display: flex; margin: 1em 1em 0;
+    align-items: center; gap: 1em
+}
+i-search.single .title h4 { 
+    display: inline-block; font-size: .9em; margin: 0; 
+    text-transform: uppercase; font-weight: 500
+}
+i-search.single .title .select {
+    display: flex; padding: .5em 1em;
+    color: var(--color-2); border: .1em solid var(--bg-3); 
+    align-items: center; gap: .5em;
+    border-radius: 100em; user-select: none
+}
+i-search.single .title .select svg { transform: translateY(.05em); transition: transform .1s; }
+i-search.single .title .select:hover { cursor: pointer; filter: brightness(1.1) }
+i-search.single .title .select:hover svg { transform: translateY(.15em) }
+
+i-search.single .search {
+    --x: -1000px;
+    height: 0; position: relative;
+    z-index: 2;
+}
+i-search.single .search > div { 
+    display: flex; gap: .5em; padding: .5em; 
+    background: var(--bg-2);
+    flex-direction: column;
+    overflow: hidden; 
+    transition: transform .3s; transform: translateX(var(--x)) 
+}
+i-search.single .search div div { display: flex; gap: 1em }
+i-search.single .search div div .close {
+    padding: 0.2em; min-width: 1.6em; height: 1.6em;
+    background: var(--bg-2);
+    border-radius: 100%; transition: filter .1s
+}
+i-search.single .search div div .close:hover { filter: brightness(1.1); cursor: pointer }
+
+i-search.single .search input { min-width: 0; flex-grow: 1 }
+
+i-search.single  ul {
+    padding: 0; margin: 0
+}
+/* }}} */
 
 
 i-loading { display: block; margin: 1em auto; width: 1.5em; height: 1.5em; border: .25em solid var(--bg-3); border-radius: 100%; border-right-color: transparent; animation: i-loading .5s linear infinite }

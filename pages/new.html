@@ -1,0 +1,101 @@
+<script init>
+</script>
+
+<div class="buttons">
+    <button class="back" onclick="app.back()">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
+        </svg>
+    </button>
+    <button class="login" onclick="app.redirect('/giriş')">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
+        </svg>
+    </button>
+</div>
+<div class="new">
+    <div class="exam">
+        <h2>Sınav</h2>
+        <form>
+            <div>
+                <input name="name" placeholder="isim">
+            </div>
+            <i-search class="publisher" i-type="single" i-title="yayınevi" i-searchfunction="async query => session.search('publishers', query)"></i-search>
+            <i-search class="exam category" i-type="single" i-title="kategori" i-searchfunction="async query => session.search('exams.categories', query)"></i-search>
+            <div class="interval">
+                <input name="min" type="number" placeholder="0" min="0" pattern="[0-9]+"> dakika <input name="sec" type="number" placeholder="0" min="0" max="59" pattern="[0-9]+"> saniye
+            </div>
+            <div class="lessons"></div>
+            <input class="submit" type="submit" value="Onayla">
+        </form>
+    </div>
+</div>
+
+<style>
+    .r { display: flex; flex-direction: column; gap: 2em }
+    .r > .buttons { display: flex; gap: 1em; align-items: center }
+    .r > .buttons button { padding: .25em; width: 2em; height: 2em; border-radius: 50% }
+    .r > .buttons button svg { opacity: .7 }
+    .r > .buttons .login svg { width: 75% } 
+
+    .r h2 { margin: 0; color: var(--color-3); font-size: 2em }
+
+    .r form > div { margin: 1em }
+    .r form > div { display: flex; gap: .5em; flex-wrap: wrap }
+    .r form > div input { min-width: 40px; width: 100%; flex: 1 1 }
+
+    .r form .lessons { flex-direction: column }
+    .r form .lessons div { display: flex; margin: .5em 1em; gap: .25em 1em; flex-wrap: wrap }
+    .r form .lessons div span { width: 100% }
+    .r form .lessons div input { flex: 0 0 1em }
+    .r form .lessons div .i1 { border-bottom-color: #e23c3c }
+    .r form .lessons div .i2 { border-bottom-color: #d9e966 }
+    .r form .lessons div .i3 { border-bottom-color: gray }
+
+    .r .submit { display: block; margin-left: auto }
+</style>
+
+<script> 
+    for (let div of r.querySelector('.new').children) {
+        const form = div.querySelector('form')
+        const type = div.className
+
+        switch (type) {
+            case 'exam': 
+                var lessons = div.querySelector('.lessons')
+                form.querySelector('.exam.category').oninput = category => {
+                    lessons.innerHTML = ''
+                    for (let [lesson, questionCount] of category.schema) 
+                        lessons.innerHTML += `
+                            <div>
+                                <span>${lesson.name.replace(/\>/g, '&lt')}</span>
+                                <input class="i1" type="number" placeholder="0" min="0" pattern="[0-9]+">
+                                <input class="i2" type="number" placeholder="0" min="0" pattern="[0-9]+">
+                                <input class="i3" type="number" placeholder="0" value="${questionCount}" min="0" pattern="[0-9]+">
+                            </div>`
+                }
+                break
+        }
+
+        form.onsubmit = async e => {
+            e.preventDefault()
+            switch (type) { 
+                case 'exam':
+                    const data = {
+                        name: form.name.value,
+                        publisher: form.querySelector('.publisher').value?.id ?? null, category: form.querySelector('.exam.category').value?.id ?? null,
+                        nets: [],
+                        interval: { min: +form.min.value, sec: +form.sec.value }
+                    }
+                    for (let i of lessons.children) data.nets.push([1, 2, 3].map(v => +i.querySelector('.i' + v).value))
+                    if (data.publisher === null || data.category === null) return alert('Yayınevi veya kategori eksik')
+                    if (!data.name) return alert('Geçerli bir isim giriniz')
+                    if (!(data.interval.min + data.interval.sec)) return alert('Geçerli bir süre giriniz')
+                    var [message, ok] = await load(async () => await session.new.exam(data))
+                    if (!ok) alert(`Hata: ${JSON.stringify(message)}`)
+                    else alert('Eklendi')
+                    break
+            }
+        }
+    }
+</script>

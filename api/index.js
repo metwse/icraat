@@ -8,7 +8,7 @@ const { Client } = require('pg')
 
 
 
-//#region -- -- -- -- MISC
+//{{{ -- -- -- -- MISC
 const HOST = require('./config/host.json')
 const ERRORS = require('./config/errors.json')
 const DATABASE = require('./config/database.json')
@@ -20,11 +20,11 @@ const server = http.createServer(app)
 
 const client = new Client(DATABASE)
 client.connect()
-//#endregion
+//}}}
 
 
 
-//#region -- -- -- -- MIDDLEWARES
+//{{{ -- -- -- -- MIDDLEWARES
 app.set('trust proxy', true)
 
 app.use(express.json())
@@ -42,8 +42,13 @@ app.use((req, res, next) => {
     next()
 })
 
+function  authRequired(req, res, next) {
+    if (req.header('token') === HOST.token) next()
+    else return res.throw(102)
+}
+
 const limit = (per, seconds, message = 'Too many requests', lookup = 'headers.x-forwarded-for') => rateLimit({ windowMs: seconds * 1000, max: per, standardHeaders: true, legacyHeaders: false, lookup: lookup, handler: (req, res) => res.throw(104, [message]) })
-//#endregion
+//}}}
 
 
 
@@ -51,8 +56,7 @@ app.get('/', (req, res) => res.json({ uptime: ~~(performance.now() / 1000), mess
 
 
 
-
-//#region -- -- -- -- PRIMITIVE DATA TYPES
+//{{{ -- -- -- -- PRIMITIVE DATA TYPES
 const dataTypes = ['exams', 'lessons', 'publishers', 'books', 'exams.categories']
 dataTypes.mappings = {
     'exams': 'exams.', 'exams.categories': 'exams.categories_',
@@ -108,11 +112,11 @@ app.post('/bulk', async (req, res) => {
     res.json(query)
 
 })
-//#endregion
+//}}}
 
 
 
-//#region -- -- -- -- DASHBOARD
+//{{{ -- -- -- -- DASHBOARD
 app.get('/dashboard', async (req, res) => {
     const [{ rows: [exams] }, { rows: questions }] = await client.query(`SELECT * FROM exams.get_dashboard(); SELECT * FROM questions.get_dashboard()`)
     res.json({ exams, questions })
@@ -127,7 +131,22 @@ app.get('/dashboard/exams/filters', async (req, res) => {
     const { rows: [data] } = await client.query(`SELECT * FROM exams.get_filters()`)
     res.json(data)
 })
-//#endregion
+//}}}
+
+
+
+//{{{ -- -- -- -- NEW
+app.post('/exams/new', authRequired, (req, res) => {
+    if (!req.body || !req.body.interval || !req.body.nets) return res.throw(100)
+    if ([req.body.publisher, req.body.category, req.body.interval?.min, req.body.interval?.sec].some(v => v == undefined || !Number.isInteger(v) || v < 0 || v > 2147483647)) return res.throw(100)
+    if (!req.body.name || req.body.name.lenght > 127) return res.throw(100)
+    if (!Array.isArray(req.body.nets) || req.body.nets.some(v => !Array.isArray(v) || v.length != 3 || v.some(a => !Number.isInteger(a) || a < 0 || a > 2147483647))) return res.throw(100)
+
+    client.query(`SELECT exams.new($1, ARRAY${JSON.stringify(req.body.nets)}, '${req.body.interval.min} minute ${req.body.interval.sec} second', NOW());`, [`${req.body.publisher}:${req.body.category} ${req.body.name}`])
+
+    res.json(true)
+})
+//}}}
 
 
 

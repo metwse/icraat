@@ -42,12 +42,12 @@ class IcraatError extends Error {
 class Session {
     static PLURAL_MAPPINGS = {
         'exam': 'exams', 'lesson': 'lessons', 'publisher': 'publishers', 'book': 'books',
-        'exam.category': 'exams.categories'
+        'exam.category': 'exams.categories', 'user': 'users'
     }
 
     constructor() {
         this.cache = {
-            'exams': {}, 'lessons': {}, 'publishers': {}, 'books': {},
+            'exams': {}, 'lessons': {}, 'publishers': {}, 'books': {}, 'users': {},
             'exams.categories': {}
         }
     }
@@ -58,9 +58,8 @@ class Session {
                 json = await fetch(url.backend + path, Object.assign(opt ?? {}, {
                     body: opt?.json ? JSON.stringify(opt.json) : opt?.body,
                     headers: Object.assign(opt?.headers || {}, {
-                        ...(this.token ? { 'Auth': this.token } : {}),
-                        ...(opt?.json ? { 'Content-Type': 'application/json' } : {}),
-                        'token': this.token
+                        ...(this.token ? { 'Token': this.token } : {}),
+                        ...(opt?.json ? { 'Content-Type': 'application/json' } : {})
                     }),
                     method: opt?.method || (opt?.json ? 'POST' : 'GET')
                 })).then(res => { raw = res, ok = res.ok; return res.json() })
@@ -142,7 +141,7 @@ class Session {
         async examsFilters() {
             var [data] = await this.session.request('/dashboard/exams/filters')
             data = await this.session.bulkGet(data)
-            return { publishers: data.publishers, 'exams.categories': data['exams.categories'] }
+            return { publishers: data.publishers, 'exams.categories': data['exams.categories'], users: data.users }
         }
     }
 
@@ -204,7 +203,7 @@ class Exam {
         }
     }
 
-    constructor({ id, publisher, publisher_id, category, category_id, net, nets, duration, timestamp, name }, session) {
+    constructor({ id, publisher, publisher_id, category, category_id, user, user_id, net, nets, duration, timestamp, name }, session) {
         this.id = id, this.name = name
         this.net = parseFloat(net)
         this.stats = nets.map(lesson => lesson.map(net => parseFloat(net))).map(([net, total, wrong, blank]) => { return { net, total, wrong, blank, true: total - wrong - blank } })
@@ -217,15 +216,16 @@ class Exam {
         else this.publisherId = publisher_id
         if (category) this.category = category
         else this.categoryId = category_id
+        if (user) this.user = user
+        else this.userId = user_id
         this._session = session
     }
 
     async format(req) {
-        if (req) return { ...(this.publisher ? {} : { publishers: [this.publisherId] }), ...(this.category ? {} : { 'exams.categories': [this.categoryId] }) }
+        if (req) return { ...(this.publisher ? {} : { publishers: [this.publisherId] }), ...(this.user ? {} : { users: [this.userId] }), ...(this.category ? {} : { 'exams.categories': [this.categoryId] }) }
         if (!this.publisher) this.publisher = await this._session.get('publisher', this.publisherId)
-        if (!this.category) {
-	    this.category = await this._session.get('exam.category', this.categoryId)
-	}
+        if (!this.category) this.category = await this._session.get('exam.category', this.categoryId)
+        if (!this.user) this.user = await this._session.get('user', this.userId)
     }
 
     get fullName() { return `${this.publisher.name} ${this.category.name} - ${this.name}` }
@@ -239,6 +239,14 @@ class Exam {
 
 
 class Lesson {
+    constructor({ id, name }, session) {
+        this.id = id, this.name = name
+        this._session = session
+    }
+}
+
+
+class User {
     constructor({ id, name }, session) {
         this.id = id, this.name = name
         this._session = session

@@ -8,6 +8,8 @@ CREATE SCHEMA IF NOT EXISTS exams AUTHORIZATION postgres;
 CREATE SCHEMA IF NOT EXISTS lessons AUTHORIZATION postgres;
 -- DROP SCHEMA IF EXISTS publishers;
 CREATE SCHEMA IF NOT EXISTS publishers AUTHORIZATION postgres;
+-- DROP SCHEMA IF EXISTS users;
+CREATE SCHEMA IF NOT EXISTS users AUTHORIZATION postgres;
 
 
 
@@ -29,6 +31,18 @@ CREATE TABLE IF NOT EXISTS public.lessons
     CONSTRAINT lessons_pkey PRIMARY KEY (id)
 ) TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.lessons OWNER to postgres;
+
+
+
+-- DROP TABLE IF EXISTS public.users;
+CREATE TABLE IF NOT EXISTS public.users
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name text COLLATE pg_catalog."default" NOT NULL,
+    key text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT users_pkey PRIMARY KEY (id)
+) TABLESPACE pg_default;
+ALTER TABLE IF EXISTS public.users OWNER to postgres;
 
 
 
@@ -81,6 +95,7 @@ CREATE TABLE IF NOT EXISTS public.exams (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     publisher_id integer NOT NULL,
     category_id integer NOT NULL,
+    user_id integer NOT NULL,
     net numeric NOT NULL,
     nets numeric[] NOT NULL,
     duration interval NOT NULL,
@@ -95,6 +110,11 @@ CREATE TABLE IF NOT EXISTS public.exams (
         NOT VALID,
     CONSTRAINT exams_publisher_id FOREIGN KEY (publisher_id)
         REFERENCES public.publishers (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT exams_user_id FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
@@ -115,6 +135,11 @@ CREATE INDEX IF NOT EXISTS exams_category_id
 CREATE INDEX IF NOT EXISTS exams_publisher_id
     ON public.exams USING btree
     (publisher_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- DROP INDEX IF EXISTS public.exams_user_id;
+CREATE INDEX IF NOT EXISTS exams_user_id
+    ON public.exams USING btree
+    (user_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
 

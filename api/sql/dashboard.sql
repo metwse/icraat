@@ -27,15 +27,17 @@ END $$;
 
 -- DROP FUNCTION IF EXISTS exams.get_filters;
 CREATE OR REPLACE FUNCTION exams.get_filters()
-RETURNS TABLE (publishers integer[], lessons integer[], "exams.categories" integer[]) 
+RETURNS TABLE (publishers integer[], lessons integer[], "exams.categories" integer[], users integer[]) 
 LANGUAGE plpgsql AS $$
 DECLARE
 	__exams_categories integer[] := ARRAY[]::integer[];
 	__publishers integer[] := ARRAY[]::integer[];
 	__lessons integer[] := ARRAY[]::integer[];
-	__publisher integer; __category integer; __lesson integer;
+	__users integer[] := ARRAY[]::integer[];
+	__publisher integer; __category integer; __lesson integer; __user integer;
 BEGIN
 	__publishers := ARRAY(SELECT publishers.id FROM publishers GROUP BY publishers.id ORDER BY publishers.id DESC LIMIT 30);
+	__users := ARRAY(SELECT users.id FROM users GROUP BY users.id ORDER BY users.id DESC LIMIT 30);
 	__exams_categories := ARRAY(SELECT exams.categories.id FROM exams.categories GROUP BY exams.categories.id ORDER BY exams.categories.id DESC LIMIT 30);
 	
 	FOREACH __category IN ARRAY __exams_categories LOOP
@@ -44,7 +46,7 @@ BEGIN
 		END LOOP;
 	END LOOP;
 	
-	RETURN QUERY SELECT __publishers, __lessons, __exams_categories;
+	RETURN QUERY SELECT __publishers, __lessons, __exams_categories, __users;
 END $$;
 
 

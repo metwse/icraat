@@ -1,10 +1,12 @@
 /* {{{ i-exam i-exams */
 i-exam { display: flex; padding: 1em; margin: 1em 0; border: 1px solid var(--bg-3); border-radius: 1em }
+i-exam:hover { cursor: pointer }
 i-exam .general { flex-grow: 1 }
 i-exam  .details { display: flex; align-items: center; flex-wrap: wrap; column-gap: 1em }
 i-exam   .category { padding: .125em .25em; background: var(--bg-3); border-radius: .25em }
 i-exam  .name { display: block; text-decoration: underline var(--t-1); font-size: 1.3em }
 i-exam  .date { opacity: .5 }
+i-exam  .user { opacity: .75 }
 i-exam .actions { display: flex; align-items: center; flex-direction: column; justify-content: space-between }
 i-exam .actions button { padding: .25em; width: 2em; height: 2em; border-radius: 50% }
 i-exam .actions .select { display: none; width: 1.5em; height: 1.5em; background: var(--color); border-radius: .25em }
@@ -12,7 +14,6 @@ i-exam .actions .select:hover { cursor: pointer }
 i-exam.active .actions .select { background: var(--t-1) }
 
 i-exams.select i-exam .select { display: block }
-i-exams.select i-exam .view { display: none }
 i-exams i-loading { display: none }
 i-exams.loading i-loading { display: block }
 /* }}} */

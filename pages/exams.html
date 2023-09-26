@@ -87,6 +87,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </nav>
+            <i-search class="users" i-type="checkbox" i-title="kullanıcı" i-searchfunction="async query => session.search('users', query)"></i-search>
             <i-search class="publishers" i-type="checkbox" i-title="yayınevi" i-searchfunction="async query => session.search('publishers', query)"></i-search>
             <i-search class="exams categories" i-type="checkbox" i-title="kategori" i-searchfunction="async query => session.search('category', query)"></i-search>
         </div>
@@ -158,10 +159,10 @@
     filter.ul = filter.querySelector('i-fancylist')
     filter.ul.schema = '{data.name}'
     filter.ul.onremove = data => {
-        filter.active[({ Publisher: 'publishers', Category: 'exams.categories' })[Object.getPrototypeOf(data).constructor.name]].remove(data)
+        filter.active[({ Publisher: 'publishers', Category: 'exams.categories', User: 'users' })[Object.getPrototypeOf(data).constructor.name]].remove(data)
         exams.search(search.value, filter.active, 300)
     }
-    filter.active = { 'publishers': [], 'exams.categories': [] }
+    filter.active = { 'publishers': [], 'exams.categories': [], 'users': [] }
 
 
     filter.select = r.querySelector('.select-filter')

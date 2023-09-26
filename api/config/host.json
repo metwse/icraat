@@ -2,6 +2,5 @@
   "frontend": "http://icraat",
   "base": "/api",
   "name": "icraat",
-  "port": 810,
-  "token": "CHANE_THIS"
+  "port": 810
 }

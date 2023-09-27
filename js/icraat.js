@@ -50,22 +50,43 @@ class Session {
             'exams': {}, 'lessons': {}, 'publishers': {}, 'books': {}, 'users': {},
             'exams.categories': {}
         }
+        this.eventListeners = {}
+    }
+
+    emit(event, args) {
+        if (Array.isArray(this.eventListeners[event])) this.eventListeners[event].forEach(f => (typeof f == 'function') && f(args)) 
+        if (typeof this[`on${event}`] == 'function') this[`on${event}`](args)
+    }
+    addEventLisener(event, f) {
+        if (Array.isArray(this.eventListeners[event])) this.eventListeners[event] = []
+        return this.eventListeners[event].push(f)
+    }
+    removeEventListener(event, id) {
+        if (Array.isArray(this.eventListeners[event])) return
+        this.eventListeners[event].id = null
     }
 
     request(path, opt) {
         return new Promise(async resolve => {
-            var ok, raw,
-                json = await fetch(url.backend + path, Object.assign(opt ?? {}, {
-                    body: opt?.json ? JSON.stringify(opt.json) : opt?.body,
-                    headers: Object.assign(opt?.headers || {}, {
-                        ...(this.token ? { 'Token': this.token } : {}),
-                        ...(opt?.json ? { 'Content-Type': 'application/json' } : {})
-                    }),
-                    method: opt?.method || (opt?.json ? 'POST' : 'GET')
-                })).then(res => { raw = res, ok = res.ok; return res.json() })
-            resolve([json, ok, raw])
+            await fetch(url.backend + path, Object.assign(opt ?? {}, {
+                body: opt?.json ? JSON.stringify(opt.json) : opt?.body,
+                headers: Object.assign(opt?.headers || {}, {
+                    ...(this.token ? { 'Token': this.token } : {}),
+                    ...(opt?.json ? { 'Content-Type': 'application/json' } : {})
+                }),
+                method: opt?.method || (opt?.json ? 'POST' : 'GET')
+            })).then(async res => resolve([await res.json(), res.ok, res])).catch(e => this.emit('unexceptederror', e))
         })
     }
+
+    async login(token) {
+        this.token = token
+        const [data, ok] = await this.request('/login')
+        if (ok) this.user = new User(data, this), this.emit('login', this.user), this.cache.users[data.id] = this.user
+        else this.token = null
+        return ok
+    }
+    logout() { if (this.token) this.token = null, this.emit('logout', this.user), this.user = null }
 
     async get(param, id) {
         const mapped = Session.PLURAL_MAPPINGS[param]
@@ -118,7 +139,6 @@ class Session {
                 }
             await this.bulkGet(request2, true)
             await Promise.all(Object.keys(data).map(key => data[key].map(({ id }) => this.cache[key][id].format && this.cache[key][id].format())).flat())
-                    
         }
         if (justCache) return
         for (let key of Object.keys(query)) for (let i = 0; i < query[key].length; i++) query[key][i] = this.cache[key][query[key][i]]
@@ -255,8 +275,8 @@ class User {
 
 
 class Publisher {
-    constructor({ id, name }, session) {
-        this.id = id, this.name = name
+    constructor({ id, name, flags }, session) {
+        this.id = id, this.name = name, this.flags = flags
         this._session = session
     }
 }

@@ -40,9 +40,15 @@ CREATE TABLE IF NOT EXISTS public.users
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     name text COLLATE pg_catalog."default" NOT NULL,
     key text COLLATE pg_catalog."default" NOT NULL,
+    flags smallint NOT NULL DEFAULT 0,
     CONSTRAINT users_pkey PRIMARY KEY (id)
 ) TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.users OWNER to postgres;
+-- DROP INDEX IF EXISTS public.users_key;
+CREATE INDEX IF NOT EXISTS users_key
+    ON public.users USING btree
+    ("key" ASC NULLS LAST)
+    TABLESPACE pg_default;
 
 
 
@@ -130,6 +136,11 @@ CREATE INDEX IF NOT EXISTS exams_index
 CREATE INDEX IF NOT EXISTS exams_category_id
     ON public.exams USING btree
     (category_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- DROP INDEX IF EXISTS public.exams_user_id;
+CREATE INDEX IF NOT EXISTS exams_user_id
+    ON public.exams USING btree
+    (user_id ASC NULLS LAST)
     TABLESPACE pg_default;
 -- DROP INDEX IF EXISTS public.exams_publisher_id;
 CREATE INDEX IF NOT EXISTS exams_publisher_id

@@ -44,8 +44,8 @@ app.use((req, res, next) => {
 
 async function authRequired(req, res, next) {
     if (req.header('token')) {
-        req.userId = (await client.query(`SELECT id FROM users WHERE key = $1;`, [req.header('token')]))?.rows?.[0]?.id
-        if (req.userId !== undefined ) next()
+        const data = (await client.query(`SELECT id, name, flags FROM users WHERE key = $1;`, [req.header('token')]))?.rows?.[0]
+        if (data !== undefined && data.id !== undefined) { req.user = data; next() }
         else res.throw(102)
     }
     else return res.throw(102)
@@ -146,11 +146,18 @@ app.post('/exams/new', authRequired, (req, res) => {
     if (!req.body.name || req.body.name.lenght > 127) return res.throw(100)
     if (!Array.isArray(req.body.nets) || req.body.nets.some(v => !Array.isArray(v) || v.length != 3 || v.some(a => !Number.isInteger(a) || a < 0 || a > 2147483647))) return res.throw(100)
     if (req.body.interval.min < 0 || req.body.interval.min > 2147483647 || req.body.interval.sec < 0 || req.body.interval.sec > 2147483647) return res.throw(100)
+    if (!isFinite(req.body.interval.min) || !isFinite(req.body.interval.sec)) return res.throw(100)
 
     client.query(`SELECT exams.new(${req.userId}, $1, ARRAY${JSON.stringify(req.body.nets)}, $2, NOW());`, [`${req.body.publisher}:${req.body.category} ${req.body.name}`, `${req.body.interval.min} minute ${req.body.interval.sec} second`])
 
     res.json(true)
 })
+//}}}
+
+
+
+//{{{ -- -- -- -- ACCOUNTS
+app.get('/login', authRequired, (req, res) => res.json(req.user)) 
 //}}}
 
 

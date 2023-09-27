@@ -1,9 +1,9 @@
 -- DROP FUNCTION IF EXISTS users.get;
 CREATE OR REPLACE FUNCTION users.get(_id integer)
-RETURNS TABLE (id integer, name text) 
+RETURNS TABLE (id integer, name text, flags smallint) 
 LANGUAGE plpgsql AS $$
 BEGIN
-	RETURN QUERY SELECT users.id, users.name FROM users WHERE users.id = _id;
+	RETURN QUERY SELECT users.id, users.name, users.flags FROM users WHERE users.id = _id;
 END $$;
 
 

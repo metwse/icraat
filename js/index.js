@@ -1,6 +1,5 @@
 ﻿const d = document
 const session = eval('new icraat.Session()')
-session.token = localStorage.getItem('token')
 var r = root = d.getElementById('root')
 
 const AsyncFunction = Object.getPrototypeOf(async () => { }).constructor
@@ -97,8 +96,8 @@ const app = {
     async load() {
         this.location.format()
         switch (this.location.pathname[0]) {
-            case '': return await this.template.render('homepage')
-            case 'sınavlar': return await this.template.render('exams')
+            //case '': return await this.template.render('homepage')
+            case '': return await this.template.render('exams')
             case 'sınavlar-eski': return await this.template.render('exams-old')
             case 'sonuç': return await this.template.render('result')
             case 'analiz': return await this.template.render('analyze')
@@ -108,7 +107,7 @@ const app = {
         }
     },
     back() {
-        if (this.location.pathname[0] && !this.history.length) this.template.render('homepage'), history.replaceState(null, null, '/'), this.location.format()
+        if (this.location.pathname[0] && !this.history.length) this.template.render('exams'), history.replaceState(null, null, '/'), this.location.format()
         else history.back()
     }
 }
@@ -125,8 +124,34 @@ onpopstate = async() => {
 }
 
 onload = async () => {
-    await app.load()
-    var initialLoad = d.getElementById('initial-load')
+    await Promise.all([session.login(localStorage.getItem('token')), app.load()])
+    const initialLoad = d.getElementById('initial-load')
     initialLoad.style.opacity = '0'
     setTimeout(() => initialLoad.remove(), 100)
+}
+
+session.onlogin = user => { 
+    localStorage.setItem('token', session.token)
+    d.getElementById('account').innerHTML = '.guest { display: none }'
+}
+session.onlogout = user => {
+    localStorage.removeItem('token')
+    d.getElementById('account').innerHTML = '.user { display: none }'
+}
+session.onunexceptederror = error => {
+    r.innerHTML = `
+    <h1>Beklenmedik bir hata meydana geldi.</h1>
+    <button class="reload">siteyi yenile</button>
+    <code>Hata detayları:</code>
+    <style>
+      .r h1 { margin: 0 0 .75em; font-size: 2em; font-weight: normal }
+      .r .reload { display: block; font-size: 1.25em; margin: 0 auto 1em }
+      .r code { display: block; font-size: 1.15em; padding: 1em; background: var(--bg-1); font-family: monospace; border-radius: .5em }
+    </style>`
+    mouse.enable()
+    const initialLoad = d.getElementById('initial-load'), reload = r.querySelector('button')
+    initialLoad.style.opacity = '0', setTimeout(() => initialLoad.remove(), 100)
+    d.getElementById('load').remove()
+    r.querySelector('code').innerText += `\n${error}`
+    reload.onclick = () => { location.reload(); reload.innerHTML = '...'; delete reload.onclick }
 }

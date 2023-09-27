@@ -1,18 +1,39 @@
-<textarea rows="5" placeholder="anahtar"></textarea>
-<div><button>Giriş</button> <button onclick="app.redirect('/')">Ana Sayfa</button></div>
+<div class="guest">
+    <textarea rows="5" placeholder="anahtar"></textarea>
+    <button>GİRİŞ</button> 
+</div>
+
+<div class="user">
+    <h1>@user</h1>
+    <button onclick="session.logout()">ÇIKIŞ</button> 
+</div>
+
+<button class="back" onclick="app.redirect('/')">ANA SAYFA</button>
 
 <style>
     .r { display: flex; gap: 1em; flex-direction: column }
-    .r textarea { padding: 1em; width: 100%; resize: vertical; background: var(--bg-2); filter: brightness(1.1); border-radius: .5em }
-    .r div { display: flex; gap: 1em }
-    .r button { width: fit-content }
+    .r .guest textarea { margin: 1em; padding: 1em; width: calc(100% - 2em); resize: vertical; background: var(--bg-2); filter: brightness(1.1); border-radius: .5em }
+    .r .guest button { width: fit-content }
+
+    .r .user h1 { font-size: 2em; margin: 0 0 .5em; font-weight: normal }
+
+    .r .back { width: fit-content }
 </style>
 
 <script>
-    var textarea = r.querySelector('textarea')
-    textarea.value = localStorage.getItem('token')
-    r.querySelector('button').onclick = () => {
-        localStorage.setItem('token', textarea.value)
-        session.token = textarea.value
+    var user = r.querySelector('.user'), guest = r.querySelector('.guest')
+
+    function init() {
+        user.querySelector('h1').innerText = `@${session.user.name}`
+    }
+    if (session.user) init()
+    else {
+        var textarea = r.querySelector('textarea')
+        textarea.value = localStorage.getItem('token')
+        guest.querySelector('button').onclick = async () => {
+            ok = await load(async () => await session.login(textarea.value))
+            if (ok) init()
+            else alert('Giriş başarısız.')
+        }
     }
 </script>

@@ -149,8 +149,11 @@ session.onunexceptederror = error => {
       .r code { display: block; font-size: 1.15em; padding: 1em; background: var(--bg-1); font-family: monospace; border-radius: .5em }
     </style>`
     mouse.enable()
-    const initialLoad = d.getElementById('initial-load'), reload = r.querySelector('button')
-    initialLoad.style.opacity = '0', setTimeout(() => initialLoad.remove(), 100)
+    const initialLoad = d.getElementById('initial-load')
+    if (initialLoad) {
+        reload = r.querySelector('button') 
+        initialLoad.style.opacity = '0', setTimeout(() => initialLoad.remove(), 100)
+    }
     d.getElementById('load').remove()
     r.querySelector('code').innerText += `\n${error}`
     reload.onclick = () => { location.reload(); reload.innerHTML = '...'; delete reload.onclick }

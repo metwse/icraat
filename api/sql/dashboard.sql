@@ -9,7 +9,7 @@ DECLARE
 	__users integer[] := ARRAY[]::integer[];
 	__exam integer; __publisher integer; __category integer; __lesson integer; __user integer;
 BEGIN
-	FOR __exam, __publisher, __category, __user IN SELECT exams.id, exams.publisher_id, exams.category_id, exams.user_id FROM exams GROUP BY exams.publisher_id, exams.category_id, exams.id ORDER BY exams.id DESC LIMIT 30 LOOP
+	FOR __exam, __publisher, __category, __user IN SELECT exams.id, exams.publisher_id, exams.category_id, exams.user_id FROM exams GROUP BY exams.publisher_id, exams.category_id, exams.id ORDER BY exams.id DESC LIMIT 40 LOOP
 		IF NOT __exam = ANY(__exams) THEN __exams := array_append(__exams, __exam); END IF; 
 		IF NOT __publisher = ANY(__publishers) THEN __publishers := array_append(__publishers, __publisher); END IF; 
 		IF NOT __category = ANY(__exams_categories) THEN __exams_categories := array_append(__exams_categories, __category); END IF; 

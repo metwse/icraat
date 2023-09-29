@@ -148,7 +148,7 @@ app.post('/exams/new', authRequired, (req, res) => {
     if (req.body.interval.min < 0 || req.body.interval.min > 2147483647 || req.body.interval.sec < 0 || req.body.interval.sec > 2147483647) return res.throw(100)
     if (!isFinite(req.body.interval.min) || !isFinite(req.body.interval.sec)) return res.throw(100)
 
-    client.query(`SELECT exams.new(${req.userId}, $1, ARRAY${JSON.stringify(req.body.nets)}, $2, NOW());`, [`${req.body.publisher}:${req.body.category} ${req.body.name}`, `${req.body.interval.min} minute ${req.body.interval.sec} second`])
+    client.query(`SELECT exams.new(${req.user.id}, $1, ARRAY${JSON.stringify(req.body.nets)}, $2, NOW());`, [`${req.body.publisher}:${req.body.category} ${req.body.name}`, `${req.body.interval.min} minute ${req.body.interval.sec} second`])
 
     res.json(true)
 })

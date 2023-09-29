@@ -28,7 +28,7 @@ BEGIN
 		 ((__publisher_id IS null) OR CARDINALITY(__publisher_id) = 0 OR exams.publisher_id = ANY(__publisher_id)) AND
 		 ((__user_id IS null) OR CARDINALITY(__user_id) = 0 OR exams.user_id = ANY(__user_id)) AND
          ((__category_id IS null) OR CARDINALITY(__category_id) = 0 OR exams.category_id = ANY(__category_id)) 
-		 ORDER BY similarity(_text, exams.full_name) DESC, id DESC LIMIT 10)
+		 ORDER BY similarity(_text, exams.full_name) DESC, id DESC LIMIT 40)
 	), 0::bigint;
 END $$;
 

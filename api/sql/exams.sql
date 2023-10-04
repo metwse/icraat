@@ -115,3 +115,15 @@ BEGIN
 		RETURN __a;
 	END IF;
 END $$;
+
+
+
+-- DROP FUNCTION IF EXISTS exams.delete;
+CREATE OR REPLACE FUNCTION exams.delete(_id integer, _user_id integer)
+RETURNS  boolean
+LANGUAGE plpgsql AS $$
+BEGIN
+    IF _user_id = (SELECT exams.user_id FROM exams WHERE exams.id = _id) OR  0 < (SELECT users.flags FROM users WHERE users.id = _user_id) & 5 THEN
+        DELETE FROM exams WHERE exams.id = _id; RETURN true;
+    ELSE RETURN false; END IF;
+END $$;

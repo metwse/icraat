@@ -23,7 +23,7 @@ input[type='submit'], button {
     display: flex; padding: .5em 1em;
     background: var(--bg-2); border: .1em solid var(--bg-3); 
     align-items: center; justify-content: center; gap: .5em;
-    border-radius: 100em; user-select: none; transition: filter .1s;
+    border-radius: 100em; user-select: none; transition: filter .1s; text-transform: uppercase;
 }
 input[type='submit']:hover, button:hover { filter: brightness(1.1); cursor: pointer }
 input[type=number] { -moz-appearance: textfield }

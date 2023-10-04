@@ -267,8 +267,8 @@ class Lesson {
 
 
 class User {
-    constructor({ id, name }, session) {
-        this.id = id, this.name = name
+    constructor({ id, name, flags }, session) {
+        this.id = id, this.name = name, this.flags = flags
         this._session = session
     }
 }

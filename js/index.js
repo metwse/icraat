@@ -101,6 +101,7 @@ const app = {
             case 'sınavlar-eski': return await this.template.render('exams-old')
             case 'sonuç': return await this.template.render('result')
             case 'analiz': return await this.template.render('analyze')
+            case 'yönet': return await this.template.render('admin')
             case 'yeni': return await this.template.render('new')
             case 'giriş': return await this.template.render('login')
             default: return await this.template.render('404')
@@ -133,10 +134,15 @@ onload = async () => {
 session.onlogin = user => { 
     localStorage.setItem('token', session.token)
     d.getElementById('account').innerHTML = '.guest { display: none }'
+    if (!(session.user.flags | 31)) d.getElementById('account').innerHTML = '.manage { display: none }'
+    if (!(session.user.flags % 2))
+        for (let i = 0; i < 16; i++)
+            if (!((session.user.flags >> i) & 1)) d.getElementById('account').innerHTML += `\n.flag-${i} { display: none }`
 }
 session.onlogout = user => {
     localStorage.removeItem('token')
-    d.getElementById('account').innerHTML = '.user { display: none }'
+    d.getElementById('account').innerHTML = '.user { display: none }\n.manage { display: none }'
+    for (let i = 0; i < 16; i++) d.getElementById('account').innerHTML += `\n.flag-${i} { display: none }`
 }
 session.onunexceptederror = error => {
     r.innerHTML = `

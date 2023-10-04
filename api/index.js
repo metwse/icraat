@@ -114,7 +114,6 @@ app.post('/bulk', async (req, res) => {
     keys = Object.keys(query)
     for (let i = 0; i < data.length; i++) query[keys[i]] = data[i].rows
     res.json(query)
-
 })
 //}}}
 
@@ -144,13 +143,17 @@ app.post('/exams/new', authRequired, (req, res) => {
     if (!req.body || !req.body.interval || !req.body.nets) return res.throw(100)
     if ([req.body.publisher, req.body.category, req.body.interval?.min, req.body.interval?.sec].some(v => v == undefined || !Number.isInteger(v) || v < 0 || v > 2147483647)) return res.throw(100)
     if (!req.body.name || req.body.name.lenght > 127) return res.throw(100)
-    if (!Array.isArray(req.body.nets) || req.body.nets.some(v => !Array.isArray(v) || v.length != 3 || v.some(a => !Number.isInteger(a) || a < 0 || a > 2147483647))) return res.throw(100)
-    if (req.body.interval.min < 0 || req.body.interval.min > 2147483647 || req.body.interval.sec < 0 || req.body.interval.sec > 2147483647) return res.throw(100)
-    if (!isFinite(req.body.interval.min) || !isFinite(req.body.interval.sec)) return res.throw(100)
+    if (!Array.isArray(req.body.nets) || req.body.nets.some(v => !Array.isArray(v) || v.length != 3 || v.some(a => !misc.pg.isInt(a)))) return res.throw(100)
+    if (!misc.pg.isInt(req.body.interval.min) || !misc.pg.isInt(req.body.interval.sec)) return res.throw(100)
 
     client.query(`SELECT exams.new(${req.user.id}, $1, ARRAY${JSON.stringify(req.body.nets)}, $2, NOW());`, [`${req.body.publisher}:${req.body.category} ${req.body.name}`, `${req.body.interval.min} minute ${req.body.interval.sec} second`])
 
     res.json(true)
+})
+
+app.delete('/exams/:id', authRequired, async (req, res) => {
+    if (!misc.pg.isInt(+req.params.id)) return res.throw(100)
+    res.json((await client.query(`SELECT exams.delete($1, ${req.user.id})`, [+req.params.id]))?.rows[0].delete)
 })
 //}}}
 

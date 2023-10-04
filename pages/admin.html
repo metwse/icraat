@@ -1,0 +1,55 @@
+<section class="flag-0">
+    <h2>0 Yönetim</h2>
+    not implemented yet
+</section>
+
+<section class="flag-1 users">
+    <h2>1 Kullanıcı Yönetimi</h2>
+    <div class="edit">
+        <h3>Kullanıcı Düzenle</h3>
+        <form>
+            <i-search class="publisher" i-type="single" i-title="kullanıcı" i-searchfunction="async query => session.search('users', query)"></i-search>
+            <div class="inputs">
+                <span>kullanıcı adı</span> <input name="username" placeholder="...">
+                <span>anahtar</span> <input name="key" placeholder="...">
+            </div>
+            <input type="submit" value="değiştir">
+        </form>
+    </div>
+    <div class="add">
+        <h3>Kullanıcı Ekle</h3>
+        <form>
+            <div class="inputs">
+                <span>kullanıcı adı</span> <input name="username" placeholder="...">
+                <span>anahtar</span> <input name="key" placeholder="...">
+            </div>
+            <input type="submit" value="ekle">
+        </form>
+    </div>
+</section>
+
+<section class="flag-3">
+    <h2>3 Kategori, Ders ve Yayınevi Yönetimi</h2>
+    not implemented yet
+</section>
+
+<button class="back" onclick="app.redirect('/')">ana sayfa</button>
+
+
+<style>
+    .r { display: flex; gap: 1em; flex-direction: column }
+
+    .r section { display: flex; gap: .5em; flex-direction: column }
+    .r section:after { content: ''; display: block; margin-top: .25em; height: 2px; background: var(--bg-3); filter: brightness(1.15) }
+    .r section > h2 { margin: 0; color: var(--color-3); font-size: 1.5em }
+    .r section > div { display: flex; gap: .25em; margin-left: 1em; flex-direction: column }
+    .r section > div:not(:last-of-type):after { content: ''; display: block; margin-top: .25em; height: 1px; background: var(--bg-3); filter: brightness(1.25) }
+    .r section > div > h3 { margin: 0; color: var(--color-2); font-size: 1.25em }
+    .r > button { width: fit-content }
+
+    .r form { display: flex; margin: 0; gap: .25em; flex-direction: column }
+    .r form input { min-width: 0 }
+    .r form input[type=submit] { width: fit-content }
+    .r form .inputs { display: grid; padding: .25em; gap: .25em 1em; grid-template-columns: auto 1fr }
+    .r form .inputs span { font-style: italic; font-variant: small-caps }
+</style>

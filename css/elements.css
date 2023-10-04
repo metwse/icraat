@@ -45,12 +45,12 @@ i-search .checkbox-ul li:before { content: ''; display: grid; width: 1em; height
 i-search .checkbox-ul li.active:before { background: var(--t-1) }
 
 i-search.single .title { 
-    display: flex; margin: 1em 1em 0;
+    display: flex;
     align-items: center; gap: 1em
 }
 i-search.single .title h4 { 
     display: inline-block; font-size: .9em; margin: 0; 
-    text-transform: uppercase; font-weight: 500
+    text-transform: uppercase; font-weight: normal
 }
 i-search.single .title .select {
     display: flex; padding: .5em 1em;
@@ -61,6 +61,8 @@ i-search.single .title .select {
 i-search.single .title .select svg { transform: translateY(.05em); transition: transform .1s; }
 i-search.single .title .select:hover { cursor: pointer; filter: brightness(1.1) }
 i-search.single .title .select:hover svg { transform: translateY(.15em) }
+i-search.single .search > div { position: relative; background: none !important }
+i-search.single .search > div:after { content: ''; display: block; position: absolute; inset: 0; background: var(--bg-2); opacity: .95; backdrop-filter: blur(.5); z-index: -1; }
 
 i-search.single .search {
     --x: -1000px;

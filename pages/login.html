@@ -1,14 +1,14 @@
 <div class="guest">
     <textarea rows="5" placeholder="anahtar"></textarea>
-    <button>GİRİŞ</button> 
+    <button>giriş</button> 
 </div>
 
 <div class="user">
     <h1>@user</h1>
-    <button onclick="session.logout()">ÇIKIŞ</button> 
+    <button onclick="session.logout()">çıkış</button> 
 </div>
 
-<button class="back" onclick="app.redirect('/')">ANA SAYFA</button>
+<button class="back" onclick="app.redirect('/')">ana sayfa</button>
 
 <style>
     .r { display: flex; gap: 1em; flex-direction: column }
@@ -27,13 +27,11 @@
         user.querySelector('h1').innerText = `@${session.user.name}`
     }
     if (session.user) init()
-    else {
-        var textarea = r.querySelector('textarea')
-        textarea.value = localStorage.getItem('token')
-        guest.querySelector('button').onclick = async () => {
-            ok = await load(async () => await session.login(textarea.value))
-            if (ok) init()
-            else alert('Giriş başarısız.')
-        }
+    var textarea = r.querySelector('textarea')
+    textarea.value = localStorage.getItem('token')
+    guest.querySelector('button').onclick = async () => {
+        ok = await load(async () => await session.login(textarea.value))
+        if (ok) init()
+        else alert('Giriş başarısız.')
     }
 </script>

@@ -18,14 +18,14 @@ customElements.define('i-exam', class extends HTMLElement {
                 </div>
                 <span class="name">NAME</span>
                 <span class="date">DATE</span>
-                <span class="user">USER</span>
+                <span class="username">USER</span>
             </div>
             <div class="actions">
                 <div class="select"></div>
             </div>`
         this.querySelector('.category').innerText = exam.category.name
         this.querySelector('.publisher').innerText = exam.publisher.name
-        this.querySelector('.user').innerText = `@${exam.user.name}`
+        this.querySelector('.username').innerText = `@${exam.user.name}`
         this.querySelector('.name').innerText = exam.name
         this.querySelector('.date').innerText = new Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(exam.timestamp)
         this.onclick = () => {

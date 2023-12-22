@@ -6,7 +6,7 @@ i-exam  .details { display: flex; align-items: center; flex-wrap: wrap; column-g
 i-exam   .category { padding: .125em .25em; background: var(--bg-3); border-radius: .25em }
 i-exam  .name { display: block; text-decoration: underline var(--t-1); font-size: 1.3em }
 i-exam  .date { opacity: .5 }
-i-exam  .user { opacity: .75 }
+i-exam  .username { opacity: .75 }
 i-exam .actions { display: flex; align-items: center; flex-direction: column; justify-content: space-between }
 i-exam .actions button { padding: .25em; width: 2em; height: 2em; border-radius: 50% }
 i-exam .actions .select { display: none; width: 1.5em; height: 1.5em; background: var(--color); border-radius: .25em }
